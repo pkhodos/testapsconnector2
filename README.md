@@ -1,9 +1,12 @@
-# Fallball connector
+# Fallball connector .Net Core
 
-This is a basic sample connector for the [Fallball Cloud Storage](https://github.com/ingrammicro/fallball-service).
+This is a basic sample connector based on .Net Core Framework for the [Fallball Cloud Storage](https://github.com/ingrammicro/fallball-service).
 
 ## Running on localhost with tunnel
-run FallballConnectorDotNet.sln
+
+* Download and unzip fallball-connector
+
+* run FallballConnectorDotNet.sln to open Visual Studio
 
 * Update `config.yml` file with your credentials
 
@@ -14,7 +17,9 @@ oauth_key: PUT_HERE_OAUTH_KEY
 oauth_secret: PUT_HERE_OAUTH_SECRET
 
 ## Running in Docker
-Not yet implemented
+```bash
+docker-compose up
+```
 
 ## Development
 run FallballConnectorDotNet.sln
