@@ -80,7 +80,7 @@ namespace APSConnector.Controllers
         [HttpPost("{id}/tenants")]
         public IActionResult NotifyAppCreate(string id)
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpDelete("{id}/tenants/{tenantid}")]

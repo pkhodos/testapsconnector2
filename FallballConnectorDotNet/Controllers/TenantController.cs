@@ -67,6 +67,8 @@ namespace APSConnector.Controllers
                 return BadRequest();
             }
 
+            _config.logger.LogError("\n\n ===== GET USAGE ===== \n\n ");
+
             return new ObjectResult(
                 new
                 {
@@ -126,7 +128,7 @@ namespace APSConnector.Controllers
         [HttpPost("{id}/users")]
         public IActionResult NotifyCreate(string id)
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpDelete("{id}/users/{userid}")]
