@@ -20,7 +20,7 @@ oauth_key: PUT_HERE_OAUTH_KEY
 oauth_secret: PUT_HERE_OAUTH_SECRET
 ```
 
-* Use URL = "https://<hostname>/v1" in APS Connect
+* Use URL = "https://hostname/v1" in APS Connect
 
 ## Running in Docker
 
