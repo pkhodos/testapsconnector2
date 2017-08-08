@@ -42,7 +42,7 @@ namespace APSConnector.Controllers
             }
             // Not yet implemented
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -55,7 +55,7 @@ namespace APSConnector.Controllers
 
             // Not yet implemented
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
 
@@ -108,7 +108,7 @@ namespace APSConnector.Controllers
 
             // Not implemented yet
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpPut("{id}/enable")]
@@ -121,7 +121,7 @@ namespace APSConnector.Controllers
 
             // Not implemented yet
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
 
@@ -134,13 +134,13 @@ namespace APSConnector.Controllers
         [HttpDelete("{id}/users/{userid}")]
         public IActionResult NotifyDelete(string id, string userid)
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpPost("{id}/onUsersChange")]
         public IActionResult NotifyChange(string id )
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
     }
 }

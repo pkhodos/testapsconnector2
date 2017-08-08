@@ -5,28 +5,6 @@ using Microsoft.Extensions.Configuration;
 namespace APSConnector.Controllers
 {
 
-    [Route("/v1/")]
-    public class HealthCheckController : Controller
-    {
-        private Config _config;
-
-        public HealthCheckController(ILogger<HealthCheckController> logger, IConfiguration config)
-        {
-            _config = new Config { logger = logger, config = config };
-        }
-
-        // GET /v1/
-        [HttpGet(Name = "Root")]
-        public JsonResult Get()
-        {
-            return Json(new
-            {
-                status = "ok",
-                version = _config.config["version"],
-            });
-        }
-    }
-
     [Produces("application/json")]
     [Route("/v1/app")]
     public class ApplicationController : Controller
@@ -49,7 +27,7 @@ namespace APSConnector.Controllers
             // Call Models
             string id = Models.Application.Create(_config, Request, oaReseller);
 
-            _config.logger.LogInformation("\n\nON APP CREATE RESPONSE: appID=" + id + "\n\n");
+            _config.logger.LogInformation("ON APP CREATE RESPONSE: appID={0}", id );
 
             return CreatedAtRoute(
                 routeName: "Root",
@@ -64,7 +42,7 @@ namespace APSConnector.Controllers
             // appData is supposed to be empty
             // Not yet supported
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
 
@@ -86,7 +64,7 @@ namespace APSConnector.Controllers
         [HttpDelete("{id}/tenants/{tenantid}")]
         public IActionResult NotifyAppDelete(string id, string tenantid )
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
     }
 }

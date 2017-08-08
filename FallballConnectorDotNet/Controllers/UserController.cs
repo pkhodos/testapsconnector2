@@ -42,7 +42,6 @@ namespace APSConnector.Controllers
 
             // Not yet implemented
 
-            //return new NoContentResult();
             return new ObjectResult(new { userId = "user-id-1"});
         }
 
@@ -76,7 +75,7 @@ namespace APSConnector.Controllers
 
             // Not yet implemented
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
     }
