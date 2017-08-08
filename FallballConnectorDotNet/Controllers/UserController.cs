@@ -76,7 +76,7 @@ namespace APSConnector.Controllers
 
             // Not yet implemented
 
-            return new ObjectResult(new { });
+            return Ok();
         }
 
     }

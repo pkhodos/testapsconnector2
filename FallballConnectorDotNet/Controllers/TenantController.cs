@@ -134,13 +134,13 @@ namespace APSConnector.Controllers
         [HttpDelete("{id}/users/{userid}")]
         public IActionResult NotifyDelete(string id, string userid)
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
 
         [HttpPost("{id}/onUsersChange")]
         public IActionResult NotifyChange(string id )
         {
-            return new ObjectResult(new { });
+            return Ok();
         }
     }
 }
