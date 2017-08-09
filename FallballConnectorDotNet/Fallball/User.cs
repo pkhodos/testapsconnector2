@@ -19,7 +19,7 @@ namespace APSConnector.Fallball
 
         public static string Create(Config _config, User user)
         {
-            FBUser u = new FBUser { email = user.email, admin = true, storage = new Storage { limit = 10000 } };
+            FBUser u = new FBUser { email = user.email, admin = true, storage = new Storage { limit = 1 } };
 
             dynamic fbUser = Fallball.Call(_config, "POST",
                 String.Format("resellers/{0}/clients/{1}/users/", 

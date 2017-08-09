@@ -14,12 +14,12 @@ namespace APSConnector.Fallball
 
         public static string GetID(Tenant oa)
         {
-            return oa.companyName;
+            return oa.apsID;
         }
 
         public static string Create(Config config, Tenant tenant)
         {
-            FBClient c = new FBClient { name = FBClient.GetID(tenant), storage = new Storage { limit = 100000 } };
+            FBClient c = new FBClient { name = FBClient.GetID(tenant), storage = new Storage { limit = 10 } };
             string body = JsonConvert.SerializeObject(c);
 
             dynamic fbReseller = Fallball.Call(config, "GET", String.Format("resellers/{0}", FBReseller.GetID(tenant.app) ));

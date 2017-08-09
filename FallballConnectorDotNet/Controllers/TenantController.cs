@@ -99,26 +99,16 @@ namespace APSConnector.Controllers
         }
 
         [HttpPut("{id}/disable")]
-        public IActionResult DisableSubscription(string id, [FromBody] dynamic data)
+        public IActionResult DisableSubscription(string id)
         {
-            if (data == null)
-            {
-                return BadRequest();
-            }
-
             // Not implemented yet
 
             return Ok();
         }
 
         [HttpPut("{id}/enable")]
-        public IActionResult EnableSubscription(string id, [FromBody] dynamic data)
+        public IActionResult EnableSubscription(string id)
         {
-            if (data == null)
-            {
-                return BadRequest();
-            }
-
             // Not implemented yet
 
             return Ok();
@@ -126,19 +116,19 @@ namespace APSConnector.Controllers
 
 
         [HttpPost("{id}/users")]
-        public IActionResult NotifyCreate(string id)
+        public IActionResult NotificationUserCreated(string id)
         {
             return Ok();
         }
 
         [HttpDelete("{id}/users/{userid}")]
-        public IActionResult NotifyDelete(string id, string userid)
+        public IActionResult NotificationUserDeleted(string id, string userid)
         {
             return Ok();
         }
 
         [HttpPost("{id}/onUsersChange")]
-        public IActionResult NotifyChange(string id )
+        public IActionResult NotificationUserChanged(string id )
         {
             return Ok();
         }
