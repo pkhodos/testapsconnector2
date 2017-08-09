@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -68,12 +69,12 @@ namespace APSConnector.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if ( id== null)
+            if ( id == null)
             {
                 return BadRequest();
             }
 
-            // Not yet implemented
+            Models.User.Delete(_config, Request, id);
 
             return Ok();
         }

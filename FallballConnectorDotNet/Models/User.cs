@@ -44,12 +44,20 @@ namespace APSConnector.Models
             return Convert.ToString(userId);
         }
 
-        public static string GetUserLogin(Config _config, HttpRequest request, string oaUserID )
+        public static void Delete(Config config, HttpRequest request, string oaUserID)
         {
-            User user = User.getObject(_config, request, oaUserID);
+            User user = User.getObject(config, request, oaUserID);
+            
+            // call external service
+            Fallball.FBUser.Delete(config, user);
+        }
+
+        public static string GetUserLogin(Config config, HttpRequest request, string oaUserID )
+        {
+            User user = User.getObject(config, request, oaUserID);
 
             // call external service
-            string url = Fallball.FBUser.GetUserLogin(_config, user);
+            string url = Fallball.FBUser.GetUserLogin(config, user);
 
             return url;
         }

@@ -29,6 +29,15 @@ namespace APSConnector.Fallball
 
             return Convert.ToString(fbUser.user_id);
         }
+        
+        public static void Delete(Config _config, User user)
+        {
+            Fallball.Call(_config, "DELETE",
+                String.Format("resellers/{0}/clients/{1}/users/{2}", 
+                    FBReseller.GetID(user.tenant.app), 
+                    FBClient.GetID(user.tenant),
+                    FBUser.GetID(user) ) );
+        }
 
         public static string GetUserLogin(Config _config, User user )
         {
