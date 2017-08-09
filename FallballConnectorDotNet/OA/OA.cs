@@ -21,7 +21,7 @@ namespace APSConnector.Models
 
         static public dynamic SendRequest(Config _config, HttpRequest r, string method, string path, string body = "" )
         {
-            string oa_host = "https://api-isv-oa.aps.odin.com/";
+            string oa_host = r.Headers["Aps-Controller-Uri"].ToString(); 
             string url = oa_host + path;
 
             string header = "";
