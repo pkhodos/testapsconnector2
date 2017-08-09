@@ -7,6 +7,9 @@ This is a basic sample connector based on .Net Core Framework for the [Fallball 
 * Open FallballConnectorDotNet.sln using Visual Studio or use following commands:
 
 ```bash
+cd FallballConnectorDotNet
+
+dotnet restore
 dotnet build
 dotnet run
 ```
