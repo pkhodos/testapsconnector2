@@ -12,6 +12,7 @@ cd FallballConnectorDotNet
 dotnet restore
 dotnet build
 dotnet run
+ * Running on http://localhost:5000/ (Press CTRL+C to quit)
 ```
 
 * Update `config.yml` file with your credentials
@@ -24,6 +25,17 @@ oauth_secret: PUT_HERE_OAUTH_SECRET
 ```
 
 * Use URL = "https://hostname/v1" in APS Connect
+
+* Create HTTP tunnel with [ngrok](https://ngrok.io)
+
+```bash
+ngrok http 5000
+```
+
+* Use public connector URL <https://YOUR_UNIQ_ID.ngrok.io/v1/>
+
+If you run the connector without SSL behind SSL-enabled reverse proxy, make sure that proxy populates the `X-Forwarded-Proto` header.
+
 
 ## Running in Docker
 
