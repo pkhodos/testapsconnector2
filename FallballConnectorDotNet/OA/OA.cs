@@ -62,10 +62,12 @@ namespace APSConnector.Models
             HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(method), url);
             request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", header);
             request.Headers.Add("Aps-Transaction-Id", r.Headers["Aps-Transaction-Id"].ToString() );
-
+            
             request.Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
 
-            _config.logger.LogInformation("OA BEGIN REQUEST to {0}", url);
+            _config.logger.LogInformation("OA BEGIN HOST {0}", r.Headers["Aps-Controller-Uri"].ToString());
+            _config.logger.LogInformation("OA Aps-Transaction-Id: {0}", r.Headers["Aps-Transaction-Id"].ToString());
+            _config.logger.LogInformation("OA REQUEST {0} to {1}", method, url);
             _config.logger.LogInformation("OA BODY: {0}", body);
 
             var response = client.SendAsync(request).Result;

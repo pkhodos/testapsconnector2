@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +28,7 @@ namespace APSConnector.Controllers
             // Call Models
             string id = Models.Application.Create(_config, Request, oaReseller);
 
-            _config.logger.LogInformation("ON APP CREATE RESPONSE: appID={0}", id );
+            _config.logger.LogInformation("ON APP CREATE RESPONSE: appID={0}", id);
 
             return CreatedAtRoute(
                 routeName: "Root",
