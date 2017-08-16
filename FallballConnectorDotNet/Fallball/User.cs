@@ -1,51 +1,61 @@
-﻿using APSConnector.Controllers;
-using APSConnector.Models;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Net.Http;
+using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Models;
 using Newtonsoft.Json;
-using System;
 
-namespace APSConnector.Fallball
+namespace FallballConnectorDotNet.Fallball
 {
-    public class FBUser
+    public class FbUser
     {
-        public string email { get; set; }
-        public Boolean admin { get; set; }
-        public Storage storage { get; set; }
-
-        public static string GetID(User oa)
-        {
-            return oa.userId;
-        }
-
-        public static string Create(Config _config, User user)
-        {
-            FBUser u = new FBUser { email = user.email, admin = true, storage = new Storage { limit = 1 } };
-
-            dynamic fbUser = Fallball.Call(_config, "POST",
-                String.Format("resellers/{0}/clients/{1}/users/", 
-                    FBReseller.GetID(user.tenant.app), 
-                    FBClient.GetID(user.tenant) ),
-                JsonConvert.SerializeObject(u) );
-
-            return Convert.ToString(fbUser.user_id);
-        }
+        [JsonProperty("email")]
+        public string Email { get; set; }
         
-        public static void Delete(Config _config, User user)
+        [JsonProperty("admin")]
+        public bool Admin { get; set; }
+        
+        [JsonProperty("storage")]
+        public Storage Storage { get; set; }
+        
+        [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string UserID { get; set; }
+
+        public static string GetId(User oa)
         {
-            Fallball.Call(_config, "DELETE",
-                String.Format("resellers/{0}/clients/{1}/users/{2}", 
-                    FBReseller.GetID(user.tenant.app), 
-                    FBClient.GetID(user.tenant),
-                    FBUser.GetID(user) ) );
+            return oa.UserId;
         }
 
-        public static string GetUserLogin(Config _config, User user )
+        public static string Create(Setting setting, User user)
         {
-            dynamic url = Fallball.Call(_config, "GET", String.Format("resellers/{0}/clients/{1}/users/{2}/link",
-                FBReseller.GetID(user.tenant.app),
-                FBClient.GetID(user.tenant),
-                FBUser.GetID(user)
-                ) );
+            var u = new FbUser {Email = user.Email, Admin = true, Storage = new Storage {Limit = 1}};
+
+            string sFbUser = Fallball.Call(setting, HttpMethod.Post, 
+                string.Format("resellers/{0}/clients/{1}/users/",
+                    FbReseller.GetId(user.Tenant.App),
+                    FbClient.GetId(user.Tenant)),
+                JsonConvert.SerializeObject(u));
+            
+            FbUser fbUser = JsonConvert.DeserializeObject<FbUser>(sFbUser);
+
+            return Convert.ToString(fbUser.UserID);
+        }
+
+        public static void Delete(Setting setting, User user)
+        {
+            Fallball.Call(setting, HttpMethod.Delete, 
+                string.Format("resellers/{0}/clients/{1}/users/{2}",
+                    FbReseller.GetId(user.Tenant.App),
+                    FbClient.GetId(user.Tenant),
+                    GetId(user)));
+        }
+
+        public static string GetUserLogin(Setting setting, User user)
+        {
+            var url = Fallball.Call(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+                FbReseller.GetId(user.Tenant.App),
+                FbClient.GetId(user.Tenant),
+                GetId(user)
+            ));
 
             return Convert.ToString(url);
         }

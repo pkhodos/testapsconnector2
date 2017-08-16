@@ -1,25 +1,24 @@
-﻿using APSConnector.Controllers;
-using APSConnector.Fallball;
+﻿using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Fallball;
 using Microsoft.AspNetCore.Http;
-using System;
 
-namespace APSConnector.Models
+namespace FallballConnectorDotNet.Models
 {
     public class Application
     {
-        public string apsID;
-        
-        public static Application getObject(dynamic oaApplication)
+        public string ApsId;
+
+        public static Application GetObject(OaApplication oaApplication)
         {
-            return new Application { apsID = Convert.ToString(oaApplication.aps.id) };
+            return new Application {ApsId = oaApplication.Aps.Id};
         }
 
-        public static string Create(Config config, HttpRequest request, dynamic oaReseller )
+        public static string Create(Setting setting, HttpRequest request, OaApplication oaApplication)
         {
-            Application app = Application.getObject(oaReseller);
+            Application app = GetObject(oaApplication);
 
             // call external service
-            string appId = FBReseller.Create(config, app);
+            var appId = FbReseller.Create(setting, app);
 
             return appId;
         }

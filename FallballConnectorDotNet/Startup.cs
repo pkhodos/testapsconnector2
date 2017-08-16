@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace APSConnector
+namespace FallballConnectorDotNet
 {
     public class Startup
     {
@@ -16,9 +12,9 @@ namespace APSConnector
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddYamlFile("config.yml", optional: false)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+                .AddYamlFile("config.yml", false)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -41,6 +37,7 @@ namespace APSConnector
             loggerFactory.AddDebug();
             loggerFactory.AddAzureWebAppDiagnostics();
 
+            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseMvc();
         }
     }

@@ -1,17 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace APSConnector.Controllers
+namespace FallballConnectorDotNet.Controllers
 {
     [Route("/v1/")]
     public class HealthCheckController : Controller
     {
-        private Config _config;
+        private readonly Setting _setting;
 
         public HealthCheckController(ILogger<HealthCheckController> logger, IConfiguration config)
         {
-            _config = new Config { logger = logger, config = config };
+            _setting = new Setting
+            {
+                Logger = logger,
+                Config = config
+            };
         }
 
         // GET /v1/
@@ -21,7 +25,7 @@ namespace APSConnector.Controllers
             return Json(new
             {
                 status = "ok",
-                version = _config.config["version"],
+                version = _setting.Config["version"]
             });
         }
     }

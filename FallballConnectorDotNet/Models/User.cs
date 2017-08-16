@@ -1,63 +1,71 @@
 ﻿using System;
-using APSConnector.Controllers;
+using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Fallball;
+using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
-namespace APSConnector.Models
+namespace FallballConnectorDotNet.Models
 {
     public class User
     {
-        public string apsID;
-        public string userId;
-        public string email;
-        public Tenant tenant;
+        public string ApsId;
+        public string Email;
+        public Tenant Tenant;
+        public string UserId;
 
-        static public User getObject(Config config, HttpRequest request, string oaUserID)
+        public static User GetObject(Setting setting, HttpRequest request, string oaUserId)
         {
-            dynamic oaUser = OA.GetResource(config, request, oaUserID );
+            string sUser = Oa.GetResource(setting, request, oaUserId);
 
-            return User.getObject(config, request, oaUser);
+            OaUser oaUser = JsonConvert.DeserializeObject<OaUser>(sUser);
+
+            return GetObject(setting, request, oaUser);
         }
 
-        static public User getObject(Config config, HttpRequest request, dynamic oaUser )
+        public static User GetObject(Setting setting, HttpRequest request, OaUser oaUser)
         {
-            dynamic oaTenant  = OA.GetResource( config, request, Convert.ToString(oaUser.tenant.aps.id ));
-            dynamic oaAdminUser  = OA.GetResource( config, request, Convert.ToString(oaUser.user.aps.id ));
+            var sTenant    = Oa.GetResource(setting, request, oaUser.TenantLink.ApsLink.Id);
+            var sAdminUser = Oa.GetResource(setting, request, oaUser.AdminUserLink.ApsLink.Id);
+            
+            OaTenant    oaTenant    = JsonConvert.DeserializeObject<OaTenant>(sTenant);
+            OaAdminUser oaAdminUser = JsonConvert.DeserializeObject<OaAdminUser>(sAdminUser);
 
-            User user = new User
+            var user = new User
             {
-                apsID = Convert.ToString(oaUser.user.aps.id),
-                userId = Convert.ToString(oaUser.userId),
-                email =  Convert.ToString(oaAdminUser.email),
-                tenant = Tenant.getObject(config, request, oaTenant)
+                ApsId = Convert.ToString(oaUser.AdminUserLink.ApsLink.Id),
+                UserId = Convert.ToString(oaUser.UserId),
+                Email = Convert.ToString(oaAdminUser.Email),
+                Tenant = Tenant.GetObject(setting, request, oaTenant)
             };
 
             return user;
         }
 
-        public static string Create(Config config, HttpRequest request, dynamic oaUser)
+        public static string Create(Setting setting, HttpRequest request, OaUser oaUser)
         {
-            User user = User.getObject(config, request, oaUser);
+            User user = GetObject(setting, request, oaUser);
 
             // call external service
-            string userId = Fallball.FBUser.Create(config, user);
+            var userId = FbUser.Create(setting, user);
 
             return Convert.ToString(userId);
         }
 
-        public static void Delete(Config config, HttpRequest request, string oaUserID)
+        public static void Delete(Setting setting, HttpRequest request, string oaUserId)
         {
-            User user = User.getObject(config, request, oaUserID);
-            
+            var user = GetObject(setting, request, oaUserId);
+
             // call external service
-            Fallball.FBUser.Delete(config, user);
+            FbUser.Delete(setting, user);
         }
 
-        public static string GetUserLogin(Config config, HttpRequest request, string oaUserID )
+        public static string GetUserLogin(Setting setting, HttpRequest request, string oaUserId)
         {
-            User user = User.getObject(config, request, oaUserID);
+            var user = GetObject(setting, request, oaUserId);
 
             // call external service
-            string url = Fallball.FBUser.GetUserLogin(config, user);
+            var url = FbUser.GetUserLogin(setting, user);
 
             return url;
         }

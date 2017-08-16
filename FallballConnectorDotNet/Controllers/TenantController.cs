@@ -1,45 +1,46 @@
+using FallballConnectorDotNet.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace APSConnector.Controllers
+namespace FallballConnectorDotNet.Controllers
 {
     [Produces("application/json")]
     [Route("/v1/tenant")]
     public class TenantController : Controller
     {
-        private Config _config;
+        private readonly Setting _setting;
 
         public TenantController(ILogger<TenantController> logger, IConfiguration config)
         {
-            _config = new Config { logger = logger, config = config };
+            _setting = new Setting
+            {
+                Logger = logger, 
+                Config = config
+            };
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] dynamic oaTenant)
+        public IActionResult Create([FromBody] OaTenant oaTenant)
         {
-            if ( oaTenant == null)
-            {
+            if (oaTenant == null)
                 return BadRequest();
-            }
 
             // Call Models
-            string tenantId = Models.Tenant.Create(_config, Request, oaTenant);
+            string tenantId = Tenant.Create(_setting, Request, oaTenant);
 
             return CreatedAtRoute(
-                routeName: "Root",
-                routeValues: null,
-                value: new { tenantId = tenantId }
-                );
+                "Root",
+                null,
+                new {tenantId}
+            );
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] dynamic data)
+        public IActionResult Update(string id, [FromBody] OaTenant data)
         {
-            if ( data== null)
-            {
+            if (data == null)
                 return BadRequest();
-            }
             // Not yet implemented
 
             return Ok();
@@ -48,10 +49,8 @@ namespace APSConnector.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if ( id== null)
-            {
+            if (id == null)
                 return BadRequest();
-            }
 
             // Not yet implemented
 
@@ -63,39 +62,35 @@ namespace APSConnector.Controllers
         public IActionResult GetUsage(string id)
         {
             if (id == null)
-            {
                 return BadRequest();
-            }
 
-            _config.logger.LogError("\n\n ===== GET USAGE ===== \n\n ");
+            _setting.Logger.LogError("\n\n ===== GET USAGE ===== \n\n ");
 
             return new ObjectResult(
                 new
                 {
-                    DISKSPACE = new { usage = 2 },
-                    USERS = new { usage = 2 },
-                    DEVICES = new { usage = 3 }
+                    DISKSPACE = new {usage = 2},
+                    USERS = new {usage = 2},
+                    DEVICES = new {usage = 3}
                 }
-                );
+            );
         }
 
         [HttpGet("{id}/adminlogin")]
         public IActionResult AdminLogin(string id)
         {
             if (id == null)
-            {
                 return BadRequest();
-            }
 
             // Call Models
-            string url = Models.Tenant.GetAdminLogin(_config, Request, id);
- 
+            var url = Tenant.GetAdminLogin(_setting, Request, id);
+
             return new ObjectResult(
                 new
                 {
                     redirectUrl = url
                 }
-                );
+            );
         }
 
         [HttpPut("{id}/disable")]
@@ -128,7 +123,7 @@ namespace APSConnector.Controllers
         }
 
         [HttpPost("{id}/onUsersChange")]
-        public IActionResult NotificationUserChanged(string id )
+        public IActionResult NotificationUserChanged(string id)
         {
             return Ok();
         }

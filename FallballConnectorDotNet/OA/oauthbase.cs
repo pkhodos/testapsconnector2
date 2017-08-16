@@ -10,29 +10,29 @@ namespace OAuth {
         /// Provides a predefined set of algorithms that are supported officially by the protocol
         /// </summary>
         public enum SignatureTypes {
-            HMACSHA1,
-            PLAINTEXT,
-            RSASHA1
+            Hmacsha1,
+            Plaintext,
+            Rsasha1
         }
 
         /// <summary>
         /// Provides an internal structure to sort the query parameter
         /// </summary>
         protected class QueryParameter {
-            private string name = null;
-            private string value = null;
+            private string _name = null;
+            private string _value = null;
 
             public QueryParameter(string name, string value) {
-                this.name = name;
-                this.value = value;
+                _name = name;
+                _value = value;
             }
 
             public string Name {
-                get { return name; }
+                get { return _name; }
             }
 
             public string Value {
-                get { return value; }
+                get { return _value; }
             }            
         }
 
@@ -70,13 +70,13 @@ namespace OAuth {
 		protected const string OAuthTokenKey = "oauth_token";
 		protected const string OAuthTokenSecretKey = "oauth_token_secret";
 
-        protected const string HMACSHA1SignatureType = "HMAC-SHA1";
+        protected const string Hmacsha1SignatureType = "HMAC-SHA1";
         protected const string PlainTextSignatureType = "PLAINTEXT";
-        protected const string RSASHA1SignatureType = "RSA-SHA1";
+        protected const string Rsasha1SignatureType = "RSA-SHA1";
 
-        protected Random random = new Random();
+        protected Random Random = new Random();
 
-        protected string unreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+        protected string UnreservedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
         /// <summary>
         /// Helper function to compute a hash value
@@ -93,7 +93,7 @@ namespace OAuth {
                 throw new ArgumentNullException("data");
             }
 
-            byte[] dataBuffer = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] dataBuffer = Encoding.ASCII.GetBytes(data);
             byte[] hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
 
             return Convert.ToBase64String(hashBytes);
@@ -138,7 +138,7 @@ namespace OAuth {
             StringBuilder result = new StringBuilder();
 
             foreach (char symbol in value) {
-                if (unreservedChars.IndexOf(symbol) != -1) {
+                if (UnreservedChars.IndexOf(symbol) != -1) {
                     result.Append(symbol);
                 } else {
                     result.Append('%' + String.Format("{0:X2}", (int)symbol));
@@ -252,7 +252,7 @@ namespace OAuth {
         /// <param name="httpMethod">The http method used. Must be a valid HTTP method verb (POST,GET,PUT, etc)</param>
         /// <returns>A base64 string of the hash value</returns>
 		public string GenerateSignature(Uri url, string consumerKey, string consumerSecret, string token, string tokenSecret, string httpMethod, string timeStamp, string nonce, out string normalizedUrl, out string normalizedRequestParameters) {            
-			return GenerateSignature(url, consumerKey, consumerSecret, token, tokenSecret, httpMethod, timeStamp, nonce, SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedRequestParameters);
+			return GenerateSignature(url, consumerKey, consumerSecret, token, tokenSecret, httpMethod, timeStamp, nonce, SignatureTypes.Hmacsha1, out normalizedUrl, out normalizedRequestParameters);
         }
 
         /// <summary>
@@ -271,16 +271,16 @@ namespace OAuth {
 			normalizedRequestParameters = null;
 
             switch (signatureType) {
-                case SignatureTypes.PLAINTEXT:					
+                case SignatureTypes.Plaintext:					
                     throw new NotImplementedException();
-                case SignatureTypes.HMACSHA1:					
-					string signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, HMACSHA1SignatureType, out normalizedUrl, out normalizedRequestParameters);
+                case SignatureTypes.Hmacsha1:					
+					string signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, Hmacsha1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
                     HMACSHA1 hmacsha1 = new HMACSHA1();
                     hmacsha1.Key = Encoding.ASCII.GetBytes(string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret)));
 
                     return GenerateSignatureUsingHash(signatureBase, hmacsha1);                                        
-                case SignatureTypes.RSASHA1:
+                case SignatureTypes.Rsasha1:
                     throw new NotImplementedException();
                 default:
                     throw new ArgumentException("Unknown signature type", "signatureType");
@@ -303,7 +303,7 @@ namespace OAuth {
         /// <returns></returns>
         public virtual string GenerateNonce() {
             // Just a simple implementation of a random number between 123400 and 9999999
-            return random.Next(123400, 9999999).ToString();            
+            return Random.Next(123400, 9999999).ToString();            
         }
 
 	}

@@ -1,50 +1,67 @@
-﻿using APSConnector.Controllers;
-using APSConnector.Models;
-using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Models;
+using Newtonsoft.Json;
 
-namespace APSConnector.Fallball
+namespace FallballConnectorDotNet.Fallball
 {
-    public class FBClient
+    public class FbClient
     {
-        public string name { get; set; }
-        public Storage storage { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        
+        [JsonProperty("storage")]
+        public Storage Storage { get; set; }
 
-        public static string GetID(Tenant oa)
+        public static string GetId(Tenant oa)
         {
-            return oa.apsID;
+            return oa.ApsId;
         }
 
-        public static string Create(Config config, Tenant tenant)
+        public static string Create(Setting setting, Tenant tenant)
         {
-            FBClient c = new FBClient { name = FBClient.GetID(tenant), storage = new Storage { limit = 10 } };
-            string body = JsonConvert.SerializeObject(c);
+            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = 10}};
+            var body = JsonConvert.SerializeObject(c);
 
-            dynamic fbReseller = Fallball.Call(config, "GET", String.Format("resellers/{0}", FBReseller.GetID(tenant.app) ));
-            dynamic response = Fallball.Call(config,  "POST", String.Format("resellers/{0}/clients/", FBReseller.GetID(tenant.app)), body, Convert.ToString(fbReseller.token));
+            string sReseller = Fallball.Call(
+                setting,
+                HttpMethod.Get,
+                string.Format("resellers/{0}", FbReseller.GetId(tenant.App)));
+            
+            FbReseller fbReseller = JsonConvert.DeserializeObject<FbReseller>(sReseller);
+            
+            string sFbClient = Fallball.Call(
+                setting, 
+                HttpMethod.Post, 
+                string.Format("resellers/{0}/clients/", FbReseller.GetId(tenant.App)),
+                body, 
+                fbReseller.Token);
+            
+            FbClient fbClient = JsonConvert.DeserializeObject<FbClient>(sFbClient);
 
-            return Convert.ToString(response.name);
+            return Convert.ToString(fbClient.Name);
         }
 
-        public static string GetAdminLogin(Config _config,  Tenant tenant)
+        public static string GetAdminLogin(Setting setting, Tenant tenant)
         {
-            string adminlogin = String.Format("admin@{0}.{1}.fallball.io", FBClient.GetID(tenant), FBReseller.GetID(tenant.app));
+            var adminlogin = string.Format("admin@{0}.{1}.fallball.io", GetId(tenant), FbReseller.GetId(tenant.App));
 
-            string user_id = "";
-            using (MD5 md5 = MD5.Create())
+            string userId;
+            using (var md5 = MD5.Create())
             {
-                byte[] hash = md5.ComputeHash(Encoding.ASCII.GetBytes(adminlogin));
-                Guid result = new Guid(hash);
-                user_id = result.ToString();
+                var hash = md5.ComputeHash(Encoding.ASCII.GetBytes(adminlogin));
+                var result = new Guid(hash);
+                userId = result.ToString();
             }
 
-            dynamic url = Fallball.Call(_config, "GET", String.Format("resellers/{0}/clients/{1}/users/{2}/link",
-                FBReseller.GetID(tenant.app),
-                FBClient.GetID(tenant),
-                user_id
-                ) );
+            var url = Fallball.Call(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+                FbReseller.GetId(tenant.App),
+                GetId(tenant),
+                userId
+            ));
 
             return Convert.ToString(url);
         }

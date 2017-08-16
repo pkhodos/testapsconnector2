@@ -1,29 +1,41 @@
-﻿using APSConnector.Controllers;
-using APSConnector.Models;
-using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Net.Http;
+using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Models;
 using Newtonsoft.Json;
-using System;
 
-namespace APSConnector.Fallball
+namespace FallballConnectorDotNet.Fallball
 {
-    public class FBReseller
+    public class FbReseller
     {
-        public string name { get; set; }
-        public string rid { get; set; }
-        public Storage storage { get; set; }
+        
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        
+        [JsonProperty("rid")]
+        public string Rid { get; set; }
+        
+        [JsonProperty("storage")]
+        public Storage Storage { get; set; }
+        
+        [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
+        public string Token { get; set; }
 
-        public static string GetID(Application oa)
+        public static string GetId(Application oa)
         {
-            return oa.apsID;
+            return oa.ApsId;
         }
 
-        public static string Create(Config config, Application app)
+        public static string Create(Setting setting, Application app)
         {
-            FBReseller r = new FBReseller { name = FBReseller.GetID(app), rid = FBReseller.GetID(app), storage = new Storage { limit = 100000 } };
-            string body = JsonConvert.SerializeObject(r);
-            dynamic response = Fallball.Call(config, "POST", "resellers/", body);
+            var r = new FbReseller {Name = GetId(app), Rid = GetId(app), Storage = new Storage {Limit = 100000}};
+            var body = JsonConvert.SerializeObject(r);
+            
+            string sReseller = Fallball.Call(setting, HttpMethod.Post, "resellers/", body);
+            
+            FbReseller fbReseller = JsonConvert.DeserializeObject<FbReseller>(sReseller);
 
-            return Convert.ToString(response.name);
+            return fbReseller.Name;
         }
     }
 }

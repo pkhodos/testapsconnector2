@@ -1,7 +1,10 @@
-﻿namespace APSConnector.Fallball
+﻿using Newtonsoft.Json;
+
+namespace FallballConnectorDotNet.Fallball
 {
     public class Storage
     {
-        public int limit { get; set; }
+        [JsonProperty("limit")]
+        public int Limit { get; set; }
     }
 }

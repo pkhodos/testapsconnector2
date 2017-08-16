@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
     <AssemblyName>FallballConnectorDotNet</AssemblyName>
     <RootNamespace>FallballConnectorDotNet</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -31,5 +29,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

@@ -1,55 +1,61 @@
 ﻿using System;
-using APSConnector.Controllers;
+using FallballConnectorDotNet.Controllers;
+using FallballConnectorDotNet.Fallball;
+using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
-namespace APSConnector.Models
+namespace FallballConnectorDotNet.Models
 {
     public class Tenant
     {
-        public string apsID;
-        public string companyName;
-        public Application app;
+        public Application App;
+        public string ApsId;
+        public string CompanyName;
 
-        static public Tenant getObject(Config config, HttpRequest request, string oaTenantID)
+        public static Tenant GetObject(Setting setting, HttpRequest request, string oaTenantId)
         {
-            dynamic oaTenant = OA.GetResource(config, request, Convert.ToString(oaTenantID));
-
-            Tenant tenant = Tenant.getObject(config, request, oaTenant );
+            string sTenant = Oa.GetResource(setting, request, Convert.ToString(oaTenantId));
+            OaTenant oaTenant = JsonConvert.DeserializeObject<OaTenant>(sTenant);
+            Tenant tenant = GetObject(setting, request, oaTenant);
 
             return tenant;
         }
 
-        static public Tenant getObject(Config config, HttpRequest request, dynamic oaTenant)
+        public static Tenant GetObject(Setting setting, HttpRequest request, OaTenant oaTenant)
         {
-            dynamic app     = OA.GetResource(config, request, Convert.ToString(oaTenant.app.aps.id));
-            dynamic account = OA.GetResource(config, request, Convert.ToString(oaTenant.account.aps.id));
+            string app =  Oa.GetResource(setting, request, Convert.ToString(oaTenant.AppLink.ApsLink.Id));
+            string account = Oa.GetResource(setting, request, Convert.ToString(oaTenant.AccountLink.ApsLink.Id));
+            
+            OaApplication oaApplication = JsonConvert.DeserializeObject<OaApplication>(app);
+            OaAccount         oaAccount = JsonConvert.DeserializeObject<OaAccount>    (account);
 
-            Tenant tenant = new Tenant
+            var tenant = new Tenant
             {
-                apsID       = Convert.ToString(oaTenant.aps.id),
-                companyName = Convert.ToString(account.companyName),
-                app         = Application.getObject(app)
+                ApsId = Convert.ToString(oaTenant.Aps.Id),
+                CompanyName = Convert.ToString(oaAccount.CompanyName),
+                App = Application.GetObject(oaApplication)
             };
 
             return tenant;
         }
 
-        public static string Create(Config config, HttpRequest request, dynamic oaTenant )
+        public static string Create(Setting setting, HttpRequest request, OaTenant oaTenant)
         {
-            Tenant tenant = Tenant.getObject(config, request, oaTenant);
+            Tenant tenant = GetObject(setting, request, oaTenant);
 
             // call external service
-            string tenantName = Fallball.FBClient.Create(config, tenant);
+            var tenantName = FbClient.Create(setting, tenant);
 
             return tenantName;
         }
 
-        public static string GetAdminLogin(Config config, HttpRequest request,  string oaTenantID )
+        public static string GetAdminLogin(Setting setting, HttpRequest request, string oaTenantId)
         {
-            Tenant tenant = Tenant.getObject(config, request, oaTenantID);
+            var tenant = GetObject(setting, request, oaTenantId);
 
             // call external service
-            string url = Fallball.FBClient.GetAdminLogin(config, tenant);
+            var url = FbClient.GetAdminLogin(setting, tenant);
 
             return url;
         }

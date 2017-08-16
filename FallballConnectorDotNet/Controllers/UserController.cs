@@ -1,83 +1,78 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using FallballConnectorDotNet.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace APSConnector.Controllers
+namespace FallballConnectorDotNet.Controllers
 {
     [Route("/v1/user")]
     public class UserController : Controller
     {
-        private Config _config;
+        private readonly Setting _setting;
 
         public UserController(ILogger<UserController> logger, IConfiguration config)
         {
-            _config = new Config { logger = logger, config = config };
+            _setting = new Setting
+            {
+                Logger = logger,
+                Config = config
+            };
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] dynamic oaUser)
+        public IActionResult Create([FromBody] OaUser oaUser)
         {
             if (oaUser == null)
-            {
                 return BadRequest();
-            }
 
             // Call Models
-            string userId = Models.User.Create(_config, Request, oaUser);
+            string userId = Models.User.Create(_setting, Request, oaUser);
 
             return CreatedAtRoute(
-                routeName: "Root",
-                routeValues: null,
-                value: new { userId = userId }
-                );
+                "Root",
+                null,
+                new {userId}
+            );
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] dynamic data)
+        public IActionResult Update(string id, [FromBody] OaUser oaUser)
         {
-            if (data == null)
-            {
+            if (oaUser == null)
                 return BadRequest();
-            }
 
             // Not yet implemented
 
-            return new ObjectResult(new { userId = "user-id-1"});
+            return new ObjectResult(new {userId = "user-id-1"});
         }
 
         [HttpGet("{id}/userlogin")]
         public IActionResult UserLogin(string id)
         {
             if (id == null)
-            {
                 return BadRequest();
-            }
 
             // Call Models
-            string url = Models.User.GetUserLogin(_config, Request, id);
-            
+            var url = Models.User.GetUserLogin(_setting, Request, id);
+
             return new ObjectResult(
                 new
                 {
                     redirectUrl = url
                 }
-                );
+            );
         }
-        
+
 
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            if ( id == null)
-            {
+            if (id == null)
                 return BadRequest();
-            }
 
-            Models.User.Delete(_config, Request, id);
+            Models.User.Delete(_setting, Request, id);
 
             return Ok();
         }
-
     }
 }

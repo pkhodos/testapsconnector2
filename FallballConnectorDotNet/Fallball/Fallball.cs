@@ -1,46 +1,59 @@
-﻿using APSConnector.Controllers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using FallballConnectorDotNet.Controllers;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
-namespace APSConnector.Fallball
+namespace FallballConnectorDotNet.Fallball
 {
     public class Fallball
     {
-        public static dynamic Call(Config _config, string method, string url, string body = "", string token=null)
+        public static string Call(Setting setting, HttpMethod method, string url, string body)
         {
-            HttpClient client = new HttpClient();
+            return Call(setting, method, url, body, null);
+        }
+        
+        public static string Call(Setting setting, HttpMethod method, string url)
+        {
+            return Call(setting, method, url, "", null);
+        }
+        
+        public static string Call(Setting setting, HttpMethod method, string url, string body, string token)
+        {
+            var client = new HttpClient();
 
-            url = _config.config["fallball_service_url"] + url;
-            client.BaseAddress = new Uri( url );
+            url = setting.Config["fallball_service_url"] + url;
+            client.BaseAddress = new Uri(url);
 
-            HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(method), url);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Token", token == null ? _config.config["fallball_service_authorization_token"]: token);
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Token",
+                token == null ? setting.Config["fallball_service_authorization_token"] : token);
 
-            request.Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+            request.Content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            _config.logger.LogInformation("FALLBALL BEGIN REQUEST to {0}", url);
-            _config.logger.LogInformation("FALLBALL BODY: {0}", body);
+            setting.Logger.LogInformation("FALLBALL BEGIN REQUEST to {0}", url);
+            setting.Logger.LogInformation("FALLBALL BODY: {0}", body);
 
             var response = client.SendAsync(request).Result;
             if (response.IsSuccessStatusCode)
             {
-                string result = response.Content.ReadAsStringAsync().Result;
+                var result = response.Content.ReadAsStringAsync().Result;
 
-                _config.logger.LogInformation("FALLBALL RESPONSE: {0}", result);
-                return JsonConvert.DeserializeObject(result);
+                setting.Logger.LogInformation("FALLBALL RESPONSE: {0}", result);
+                return result;
             }
             else
             {
-                string result = response.Content.ReadAsStringAsync().Result;
-                _config.logger.LogInformation("FALLBALL FAIL: {0}", result);
+                var result = response.Content.ReadAsStringAsync().Result;
+                setting.Logger.LogInformation("FALLBALL FAIL: {0}", result);
 
-                throw new WebException(response.Content.ReadAsStringAsync().Result);
+                var error = string.Format("Call to Fallball failed. URL: {0}, BODY: {1}, RESPONSE: {2}",
+                    url, body, result);
+
+                throw new WebException(error);
             }
         }
     }

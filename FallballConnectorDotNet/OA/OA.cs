@@ -1,92 +1,101 @@
-﻿using OAuth;
-using System;
+﻿using System;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using APSConnector.Controllers;
+using System.Text;
+using FallballConnectorDotNet.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using OAuth;
 
-namespace APSConnector.Models
+namespace FallballConnectorDotNet.OA
 {
-    public class OA
+    public class Oa
     {
-        static public dynamic GetResource(Config _config, HttpRequest request, string resource)
+        public static string GetResource(Setting setting, HttpRequest request, string resource)
         {
-            string url = "aps/2/resources/" + resource;
+            var url = "aps/2/resources/" + resource;
 
-            return OA.SendRequest(_config, request, "GET", url);
+            return SendRequest(setting, request, HttpMethod.Get, url, "");
         }
 
-        static public dynamic SendRequest(Config _config, HttpRequest r, string method, string path, string body = "" )
+        public static string SendRequest(Setting setting, HttpRequest r, HttpMethod method, string path, string body)
         {
-            string oa_host = r.Headers["Aps-Controller-Uri"].ToString(); 
-            string url = oa_host + path;
+            var oaHost = r.Headers["Aps-Controller-Uri"].ToString();
+            if (oaHost == "")
+                throw new WebException("Header 'Aps-Controller-Uri' is not found");
+            
+            var url = oaHost + path;
 
-            string header = "";
+            string header;
 
             {
-               OAuthBase oauthBase = new OAuthBase();
-                string timestamp = oauthBase.GenerateTimeStamp();
-                string nonce = oauthBase.GenerateNonce();
-                string consumerKey = _config.config["oauth_key"];
-                string consumerSecret = _config.config["oauth_secret"];
+                var oauthBase = new OAuthBase();
+                var timestamp = oauthBase.GenerateTimeStamp();
+                var nonce = oauthBase.GenerateNonce();
+                var consumerKey = setting.Config["oauth_key"];
+                var consumerSecret = setting.Config["oauth_secret"];
                 string normalizedUrl;
                 string normalizedRequestParameters;
 
                 // generating signature based on requst parameters
-                string sig = oauthBase.GenerateSignature(
-                        new Uri(url),
-                        consumerKey,
-                        consumerSecret,
-                        string.Empty, string.Empty,
-                        method,
-                        timestamp,
-                        nonce,
-                        out normalizedUrl, out normalizedRequestParameters);
+                var sig = oauthBase.GenerateSignature(
+                    new Uri(url),
+                    consumerKey,
+                    consumerSecret,
+                    string.Empty, string.Empty,
+                    method.ToString(),
+                    timestamp,
+                    nonce,
+                    out normalizedUrl, out normalizedRequestParameters);
 
-                header = String.Format(
+                header = string.Format(
                     "oauth_consumer_key=\"{0}\"" +
-                   ",oauth_signature_method=\"HMAC-SHA1\"" +
-                   ",oauth_timestamp=\"{1}\"" +
-                   ",oauth_nonce=\"{2}\"" +
-                   ",oauth_version=\"1.0\"" +
-                   ",oauth_signature=\"{3}\"",
-                   consumerKey, timestamp, nonce, sig);
+                    ",oauth_signature_method=\"HMAC-SHA1\"" +
+                    ",oauth_timestamp=\"{1}\"" +
+                    ",oauth_nonce=\"{2}\"" +
+                    ",oauth_version=\"1.0\"" +
+                    ",oauth_signature=\"{3}\"",
+                    consumerKey, timestamp, nonce, sig);
             }
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(url);
-
-            HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(method), url);
-            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", header);
-            request.Headers.Add("Aps-Transaction-Id", r.Headers["Aps-Transaction-Id"].ToString() );
-            
-            request.Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
-
-            _config.logger.LogInformation("OA BEGIN HOST {0}", r.Headers["Aps-Controller-Uri"].ToString());
-            _config.logger.LogInformation("OA Aps-Transaction-Id: {0}", r.Headers["Aps-Transaction-Id"].ToString());
-            _config.logger.LogInformation("OA REQUEST {0} to {1}", method, url);
-            _config.logger.LogInformation("OA BODY: {0}", body);
-
-            var response = client.SendAsync(request).Result;
-                
-
-            if (response.IsSuccessStatusCode)
+            using (var client = new HttpClient())
             {
-                string result = response.Content.ReadAsStringAsync().Result;
+                client.BaseAddress = new Uri(url);
 
-                _config.logger.LogInformation("OA RESPONSE OK: {0}", result);
-                return JsonConvert.DeserializeObject(result);
-            }
-            else
-            {
-                string result = response.Content.ReadAsStringAsync().Result;
-                _config.logger.LogInformation("OA RESPONSE FAIL: {0}", result);
-                throw new WebException(response.Content.ReadAsStringAsync().Result);
-            }
+                var request = new HttpRequestMessage(method, url);
+                request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", header);
+                request.Headers.Add("Aps-Transaction-Id", r.Headers["Aps-Transaction-Id"].ToString());
 
+                request.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+                setting.Logger.LogInformation("OA BEGIN HOST {0}", r.Headers["Aps-Controller-Uri"].ToString());
+                setting.Logger.LogInformation("OA Aps-Transaction-Id: {0}", r.Headers["Aps-Transaction-Id"].ToString());
+                setting.Logger.LogInformation("OA REQUEST {0} to {1}", method.ToString(), url);
+                setting.Logger.LogInformation("OA BODY: {0}", body);
+
+                using (var response = client.SendAsync(request).Result)
+                using (var content = response.Content)
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = content.ReadAsStringAsync().Result;
+
+                        setting.Logger.LogInformation("OA RESPONSE OK: {0}", result);
+                        return result;
+                    }
+                    else
+                    {
+                        var result = content.ReadAsStringAsync().Result;
+                        setting.Logger.LogInformation("OA RESPONSE FAIL: {0}", result);
+                        
+                        var error = string.Format("Call to OA failed. URL: {0} RESPONSE: {1}",
+                            url, result);
+
+                        throw new WebException(error);
+                    }
+                }
+            }
         }
     }
 }
