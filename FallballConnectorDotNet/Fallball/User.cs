@@ -29,20 +29,18 @@ namespace FallballConnectorDotNet.Fallball
         {
             var u = new FbUser {Email = user.Email, Admin = true, Storage = new Storage {Limit = 1}};
 
-            string sFbUser = Fallball.Call(setting, HttpMethod.Post, 
+            FbUser fbUser = Fallball.Call<FbUser>(setting, HttpMethod.Post, 
                 string.Format("resellers/{0}/clients/{1}/users/",
                     FbReseller.GetId(user.Tenant.App),
                     FbClient.GetId(user.Tenant)),
                 JsonConvert.SerializeObject(u));
             
-            FbUser fbUser = JsonConvert.DeserializeObject<FbUser>(sFbUser);
-
-            return Convert.ToString(fbUser.UserID);
+            return fbUser.UserID;
         }
 
         public static void Delete(Setting setting, User user)
         {
-            Fallball.Call(setting, HttpMethod.Delete, 
+            Fallball.Call<User>(setting, HttpMethod.Delete, 
                 string.Format("resellers/{0}/clients/{1}/users/{2}",
                     FbReseller.GetId(user.Tenant.App),
                     FbClient.GetId(user.Tenant),
@@ -51,13 +49,13 @@ namespace FallballConnectorDotNet.Fallball
 
         public static string GetUserLogin(Setting setting, User user)
         {
-            var url = Fallball.Call(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+            string url = Fallball.Call<String>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
                 FbReseller.GetId(user.Tenant.App),
                 FbClient.GetId(user.Tenant),
                 GetId(user)
             ));
 
-            return Convert.ToString(url);
+            return url;
         }
     }
 }

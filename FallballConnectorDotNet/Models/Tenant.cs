@@ -15,8 +15,7 @@ namespace FallballConnectorDotNet.Models
 
         public static Tenant GetObject(Setting setting, HttpRequest request, string oaTenantId)
         {
-            string sTenant = Oa.GetResource(setting, request, Convert.ToString(oaTenantId));
-            OaTenant oaTenant = JsonConvert.DeserializeObject<OaTenant>(sTenant);
+            OaTenant oaTenant = Oa.GetResource<OaTenant>(setting, request, oaTenantId);
             Tenant tenant = GetObject(setting, request, oaTenant);
 
             return tenant;
@@ -24,16 +23,13 @@ namespace FallballConnectorDotNet.Models
 
         public static Tenant GetObject(Setting setting, HttpRequest request, OaTenant oaTenant)
         {
-            string app =  Oa.GetResource(setting, request, Convert.ToString(oaTenant.AppLink.ApsLink.Id));
-            string account = Oa.GetResource(setting, request, Convert.ToString(oaTenant.AccountLink.ApsLink.Id));
-            
-            OaApplication oaApplication = JsonConvert.DeserializeObject<OaApplication>(app);
-            OaAccount         oaAccount = JsonConvert.DeserializeObject<OaAccount>    (account);
+            OaApplication oaApplication = Oa.GetResource<OaApplication>(setting, request, oaTenant.AppLink.ApsLink.Id);
+            OaAccount         oaAccount = Oa.GetResource<OaAccount>(setting, request, oaTenant.AccountLink.ApsLink.Id);
 
             var tenant = new Tenant
             {
-                ApsId = Convert.ToString(oaTenant.Aps.Id),
-                CompanyName = Convert.ToString(oaAccount.CompanyName),
+                ApsId = oaTenant.Aps.Id,
+                CompanyName = oaAccount.CompanyName,
                 App = Application.GetObject(oaApplication)
             };
 

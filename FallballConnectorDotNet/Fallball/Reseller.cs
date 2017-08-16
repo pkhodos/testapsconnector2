@@ -31,9 +31,7 @@ namespace FallballConnectorDotNet.Fallball
             var r = new FbReseller {Name = GetId(app), Rid = GetId(app), Storage = new Storage {Limit = 100000}};
             var body = JsonConvert.SerializeObject(r);
             
-            string sReseller = Fallball.Call(setting, HttpMethod.Post, "resellers/", body);
-            
-            FbReseller fbReseller = JsonConvert.DeserializeObject<FbReseller>(sReseller);
+            FbReseller fbReseller = Fallball.Call<FbReseller>(setting, HttpMethod.Post, "resellers/", body);
 
             return fbReseller.Name;
         }

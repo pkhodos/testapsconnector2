@@ -18,6 +18,8 @@ namespace FallballConnectorDotNet.Models
         
         [JsonProperty("USERS")]
         public OaLimit UsersLimit { get; set; }
+        
+        // add your resources here
     }
 
     public class OaLimit

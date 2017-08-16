@@ -16,26 +16,21 @@ namespace FallballConnectorDotNet.Models
 
         public static User GetObject(Setting setting, HttpRequest request, string oaUserId)
         {
-            string sUser = Oa.GetResource(setting, request, oaUserId);
-
-            OaUser oaUser = JsonConvert.DeserializeObject<OaUser>(sUser);
+            OaUser oaUser = Oa.GetResource<OaUser>(setting, request, oaUserId);
 
             return GetObject(setting, request, oaUser);
         }
 
         public static User GetObject(Setting setting, HttpRequest request, OaUser oaUser)
         {
-            var sTenant    = Oa.GetResource(setting, request, oaUser.TenantLink.ApsLink.Id);
-            var sAdminUser = Oa.GetResource(setting, request, oaUser.AdminUserLink.ApsLink.Id);
-            
-            OaTenant    oaTenant    = JsonConvert.DeserializeObject<OaTenant>(sTenant);
-            OaAdminUser oaAdminUser = JsonConvert.DeserializeObject<OaAdminUser>(sAdminUser);
+            OaTenant    oaTenant    = Oa.GetResource<OaTenant>(setting, request, oaUser.TenantLink.ApsLink.Id);
+            OaAdminUser oaAdminUser = Oa.GetResource<OaAdminUser>(setting, request, oaUser.AdminUserLink.ApsLink.Id);
 
             var user = new User
             {
-                ApsId = Convert.ToString(oaUser.AdminUserLink.ApsLink.Id),
-                UserId = Convert.ToString(oaUser.UserId),
-                Email = Convert.ToString(oaAdminUser.Email),
+                ApsId =  oaUser.AdminUserLink.ApsLink.Id,
+                UserId = oaUser.UserId,
+                Email =  oaAdminUser.Email,
                 Tenant = Tenant.GetObject(setting, request, oaTenant)
             };
 
@@ -47,9 +42,9 @@ namespace FallballConnectorDotNet.Models
             User user = GetObject(setting, request, oaUser);
 
             // call external service
-            var userId = FbUser.Create(setting, user);
+            string userId = FbUser.Create(setting, user);
 
-            return Convert.ToString(userId);
+            return userId;
         }
 
         public static void Delete(Setting setting, HttpRequest request, string oaUserId)

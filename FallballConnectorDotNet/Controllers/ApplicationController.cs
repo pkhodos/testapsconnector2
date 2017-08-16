@@ -41,8 +41,6 @@ namespace FallballConnectorDotNet.Controllers
         [HttpPost("{id}/upgrade")]
         public IActionResult Upgrade()
         {
-            // Not yet supported
-
             return Ok();
         }
 
@@ -50,8 +48,6 @@ namespace FallballConnectorDotNet.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            // Not yet supported
-
             return new ObjectResult(new { });
         }
 

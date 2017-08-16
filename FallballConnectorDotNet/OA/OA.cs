@@ -6,20 +6,21 @@ using System.Text;
 using FallballConnectorDotNet.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OAuth;
 
 namespace FallballConnectorDotNet.OA
 {
     public class Oa
     {
-        public static string GetResource(Setting setting, HttpRequest request, string resource)
+        public static T GetResource<T>(Setting setting, HttpRequest request, string resource)
         {
             var url = "aps/2/resources/" + resource;
 
-            return SendRequest(setting, request, HttpMethod.Get, url, "");
+            return SendRequest<T>(setting, request, HttpMethod.Get, url, "");
         }
 
-        public static string SendRequest(Setting setting, HttpRequest r, HttpMethod method, string path, string body)
+        public static T SendRequest<T>(Setting setting, HttpRequest r, HttpMethod method, string path, string body)
         {
             var oaHost = r.Headers["Aps-Controller-Uri"].ToString();
             if (oaHost == "")
@@ -82,7 +83,7 @@ namespace FallballConnectorDotNet.OA
                         var result = content.ReadAsStringAsync().Result;
 
                         setting.Logger.LogInformation("OA RESPONSE OK: {0}", result);
-                        return result;
+                        return JsonConvert.DeserializeObject<T>(result);
                     }
                     else
                     {

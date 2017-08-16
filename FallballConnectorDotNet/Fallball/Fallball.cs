@@ -11,17 +11,17 @@ namespace FallballConnectorDotNet.Fallball
 {
     public class Fallball
     {
-        public static string Call(Setting setting, HttpMethod method, string url, string body)
+        public static T Call<T>(Setting setting, HttpMethod method, string url, string body)
         {
-            return Call(setting, method, url, body, null);
+            return Call<T>(setting, method, url, body, null);
         }
         
-        public static string Call(Setting setting, HttpMethod method, string url)
+        public static T Call<T>(Setting setting, HttpMethod method, string url)
         {
-            return Call(setting, method, url, "", null);
+            return Call<T>(setting, method, url, "", null);
         }
         
-        public static string Call(Setting setting, HttpMethod method, string url, string body, string token)
+        public static T Call<T>(Setting setting, HttpMethod method, string url, string body, string token)
         {
             var client = new HttpClient();
 
@@ -43,7 +43,7 @@ namespace FallballConnectorDotNet.Fallball
                 var result = response.Content.ReadAsStringAsync().Result;
 
                 setting.Logger.LogInformation("FALLBALL RESPONSE: {0}", result);
-                return result;
+                return JsonConvert.DeserializeObject<T>(result);
             }
             else
             {
