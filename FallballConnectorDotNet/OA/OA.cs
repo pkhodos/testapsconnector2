@@ -131,11 +131,13 @@ namespace FallballConnectorDotNet.OA
             var oauthBase = new OAuthBase();
 
             var url = context.Request.GetDisplayUrl();
-            url = url.Replace("http:", "https:");
+            
+            // support localhost and https urls
+            if(url.Contains("http://localhost") == false)
+                url = url.Replace("http:", "https:");
             
             var generatedSig = oauthBase.GenerateSignature(
                 new Uri(url),
-                //new Uri("https://44257984.ngrok.io/v1/app"),
                 header["oauth_consumer_key"],
                 _config["oauth_secret"],
                 string.Empty, string.Empty,

@@ -13,13 +13,13 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FallballConnectorDotNet
 {
-    public class Middleware
+    public class InMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<Middleware> _logger;
+        private readonly ILogger<InMiddleware> _logger;
 
 
-        public Middleware(RequestDelegate next, ILogger<Middleware> logger)
+        public InMiddleware(RequestDelegate next, ILogger<InMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -39,12 +39,13 @@ namespace FallballConnectorDotNet
                 var url = UriHelper.GetDisplayUrl(context.Request);
                 var requestBodyText = new StreamReader(requestBodyStream).ReadToEnd();
                 _logger.LogInformation(
-                    $"REQUEST METHOD: {context.Request.Method}, REQUEST URL: {url}, REQUEST BODY: {requestBodyText}, ");
+                    $"===>>> REQUEST METHOD: {context.Request.Method}, REQUEST URL: {url}, REQUEST BODY: {requestBodyText}, ");
 
                 requestBodyStream.Seek(0, SeekOrigin.Begin);
                 context.Request.Body = requestBodyStream;
                 
                 await _next(context);
+                //context.Request.Body = originalRequestBody;
             }
             catch (Exception ex)
             {
@@ -58,6 +59,34 @@ namespace FallballConnectorDotNet
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             return context.Response.WriteAsync(result);
+        }
+    }
+    
+    public class OutMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private readonly ILogger<OutMiddleware> _logger;
+
+        public OutMiddleware(RequestDelegate next, ILogger<OutMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            var bodyStream = context.Response.Body;
+
+            var responseBodyStream = new MemoryStream();
+            context.Response.Body = responseBodyStream;
+
+            await _next(context);
+
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            var responseBody = new StreamReader(responseBodyStream).ReadToEnd();
+            _logger.LogInformation($"<<<== RESPONSE LOG: {responseBody}");
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            await responseBodyStream.CopyToAsync(bodyStream);
         }
     }
 }

@@ -30,8 +30,6 @@ namespace FallballConnectorDotNet.Controllers
 
             var id = Application.Create(_setting, Request, oaApplication);
             
-            _setting.Logger.LogInformation("ON APP CREATE RESPONSE: appID={0}", id);
-
             return CreatedAtRoute(
                 "Root",
                 null,

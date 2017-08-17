@@ -47,7 +47,8 @@ namespace FallballConnectorDotNet
             loggerFactory.AddDebug();
             loggerFactory.AddAzureWebAppDiagnostics();
 
-            app.UseMiddleware(typeof(Middleware));
+            app.UseMiddleware(typeof(OutMiddleware));
+            app.UseMiddleware(typeof(InMiddleware));
             
             app.UseMvc();
         }
