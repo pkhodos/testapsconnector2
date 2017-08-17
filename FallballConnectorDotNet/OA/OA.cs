@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using FallballConnectorDotNet.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OAuth;
@@ -97,6 +101,53 @@ namespace FallballConnectorDotNet.OA
                     }
                 }
             }
+        }
+        
+        public static void ValidateRequest (IConfiguration _config, ActionExecutingContext actionContext)
+        {
+            var context = actionContext.HttpContext;
+            
+            // OAuth validation
+            if(!context.Request.Headers.ContainsKey("Authorization"))
+                throw new WebException("Header 'Authorization' is absent.");
+                
+                
+            string s = context.Request.Headers["Authorization"];
+            s = s.Replace("OAuth ", "");
+            s = s.Replace("\"", "");
+            s = s.Replace(" ", "");
+
+            var header = s.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => part.Split('='))
+                .ToDictionary(split => split[0], split => split[1]);
+
+
+            string normalizedUrl;
+            string normalizedRequestParameters;
+
+            var oauthSecret = _config["oauth_secret"];
+
+            // generating signature based on requst parameters
+            var oauthBase = new OAuthBase();
+
+            var url = context.Request.GetDisplayUrl();
+            url = url.Replace("http:", "https:");
+            
+            var generatedSig = oauthBase.GenerateSignature(
+                new Uri(url),
+                //new Uri("https://44257984.ngrok.io/v1/app"),
+                header["oauth_consumer_key"],
+                _config["oauth_secret"],
+                string.Empty, string.Empty,
+                context.Request.Method,
+                header["oauth_timestamp"],
+                header["oauth_nonce"],
+                out normalizedUrl, out normalizedRequestParameters);
+
+            var incomingSig = System.Net.WebUtility.UrlDecode(header["oauth_signature"]);
+            
+            if(generatedSig != incomingSig )
+                throw new WebException("Authentication is failed.");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace FallballConnectorDotNet.Controllers
             };
         }
 
-        // GET /v1/
+        [AllowAnonimousAttribute]
         [HttpGet(Name = "Root")]
         public JsonResult Get()
         {
