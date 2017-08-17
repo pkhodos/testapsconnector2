@@ -49,44 +49,18 @@ namespace FallballConnectorDotNet
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(_logger, context, ex);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(ILogger<InMiddleware> logger, HttpContext context, Exception exception)
         {
             var result = JsonConvert.SerializeObject(new {error = exception.Message});
+            logger.LogError("<<<=== RESPONSE FAILED {0}", result);
+            
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             return context.Response.WriteAsync(result);
-        }
-    }
-    
-    public class OutMiddleware
-    {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<OutMiddleware> _logger;
-
-        public OutMiddleware(RequestDelegate next, ILogger<OutMiddleware> logger)
-        {
-            _next = next;
-            _logger = logger;
-        }
-
-        public async Task Invoke(HttpContext context)
-        {
-            var bodyStream = context.Response.Body;
-
-            var responseBodyStream = new MemoryStream();
-            context.Response.Body = responseBodyStream;
-
-            await _next(context);
-
-            responseBodyStream.Seek(0, SeekOrigin.Begin);
-            var responseBody = new StreamReader(responseBodyStream).ReadToEnd();
-            _logger.LogInformation($"<<<== RESPONSE LOG: {responseBody}");
-            responseBodyStream.Seek(0, SeekOrigin.Begin);
-            await responseBodyStream.CopyToAsync(bodyStream);
         }
     }
 }
