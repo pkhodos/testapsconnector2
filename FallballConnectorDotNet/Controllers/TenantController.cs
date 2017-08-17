@@ -27,7 +27,7 @@ namespace FallballConnectorDotNet.Controllers
                 return BadRequest();
 
             // Call Models
-            string tenantId = Tenant.Create(_setting, Request, oaTenant);
+            var tenantId = Tenant.Create(_setting, Request, oaTenant);
 
             return CreatedAtRoute(
                 "Root",

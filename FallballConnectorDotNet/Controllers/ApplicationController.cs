@@ -1,7 +1,9 @@
+using System.Linq;
 using FallballConnectorDotNet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace FallballConnectorDotNet.Controllers
 {
@@ -26,9 +28,8 @@ namespace FallballConnectorDotNet.Controllers
             if (oaApplication == null)
                 return BadRequest();
 
-            // Call Models
-            string id = Application.Create(_setting, Request, oaApplication);
-
+            var id = Application.Create(_setting, Request, oaApplication);
+            
             _setting.Logger.LogInformation("ON APP CREATE RESPONSE: appID={0}", id);
 
             return CreatedAtRoute(

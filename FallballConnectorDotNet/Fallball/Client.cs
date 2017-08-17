@@ -26,12 +26,12 @@ namespace FallballConnectorDotNet.Fallball
             var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = 10}};
             var body = JsonConvert.SerializeObject(c);
 
-            FbReseller fbReseller = Fallball.Call<FbReseller>(
+            var fbReseller = Fallball.Call<FbReseller>(
                 setting,
                 HttpMethod.Get,
                 string.Format("resellers/{0}", FbReseller.GetId(tenant.App)));
             
-            FbClient fbClient = Fallball.Call<FbClient>(
+            var fbClient = Fallball.Call<FbClient>(
                 setting, 
                 HttpMethod.Post, 
                 string.Format("resellers/{0}/clients/", FbReseller.GetId(tenant.App)),
@@ -53,7 +53,7 @@ namespace FallballConnectorDotNet.Fallball
                 userId = result.ToString();
             }
 
-            string url = Fallball.Call<string>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+            var url = Fallball.Call<string>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
                 FbReseller.GetId(tenant.App),
                 GetId(tenant),
                 userId

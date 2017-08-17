@@ -26,7 +26,7 @@ namespace FallballConnectorDotNet.Controllers
                 return BadRequest();
 
             // Call Models
-            string userId = Models.User.Create(_setting, Request, oaUser);
+            var userId = Models.User.Create(_setting, Request, oaUser);
 
             return CreatedAtRoute(
                 "Root",

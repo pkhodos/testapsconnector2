@@ -12,9 +12,9 @@ namespace FallballConnectorDotNet
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", false, true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
-                .AddYamlFile("config.yml", false)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddYamlFile("config.yml", optional: false)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -33,11 +33,12 @@ namespace FallballConnectorDotNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
             loggerFactory.AddAzureWebAppDiagnostics();
 
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+            
             app.UseMvc();
         }
     }

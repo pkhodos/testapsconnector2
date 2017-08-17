@@ -84,8 +84,8 @@ namespace OAuth {
                 throw new ArgumentNullException("data");
             }
 
-            byte[] dataBuffer = Encoding.ASCII.GetBytes(data);
-            byte[] hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
+            var dataBuffer = Encoding.ASCII.GetBytes(data);
+            var hashBytes = hashAlgorithm.ComputeHash(dataBuffer);
 
             return Convert.ToBase64String(hashBytes);
         }
@@ -95,14 +95,14 @@ namespace OAuth {
                 parameters = parameters.Remove(0, 1);
             }
 
-            List<QueryParameter> result = new List<QueryParameter>();
+            var result = new List<QueryParameter>();
 
             if (!string.IsNullOrEmpty(parameters)) {
-                string[] p = parameters.Split('&');
-                foreach (string s in p) {
+                var p = parameters.Split('&');
+                foreach (var s in p) {
                     if (!string.IsNullOrEmpty(s) && !s.StartsWith(OAuthParameterPrefix)) {
                         if (s.IndexOf('=') > -1) {
-                            string[] temp = s.Split('=');
+                            var temp = s.Split('=');
                             result.Add(new QueryParameter(temp[0], temp[1]));
                         } else {
                             result.Add(new QueryParameter(s, string.Empty));
@@ -115,9 +115,9 @@ namespace OAuth {
         }
 
         protected string UrlEncode(string value) {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
-            foreach (char symbol in value) {
+            foreach (var symbol in value) {
                 if (UnreservedChars.IndexOf(symbol) != -1) {
                     result.Append(symbol);
                 } else {
@@ -129,9 +129,9 @@ namespace OAuth {
         }
                         
 		protected string NormalizeRequestParameters(IList<QueryParameter> parameters) {			
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
             QueryParameter p = null;
-            for (int i = 0; i < parameters.Count; i++) {
+            for (var i = 0; i < parameters.Count; i++) {
                 p = parameters[i];
                 sb.AppendFormat("{0}={1}", p.Name, p.Value);
 
@@ -167,7 +167,7 @@ namespace OAuth {
 			normalizedUrl = null;
 			normalizedRequestParameters = null;
 
-            List<QueryParameter> parameters = GetQueryParameters(url.Query);
+            var parameters = GetQueryParameters(url.Query);
             parameters.Add(new QueryParameter(OAuthVersionKey, OAuthVersion));
             parameters.Add(new QueryParameter(OAuthNonceKey, nonce));
             parameters.Add(new QueryParameter(OAuthTimestampKey, timeStamp));
@@ -188,7 +188,7 @@ namespace OAuth {
             normalizedUrl += url.AbsolutePath;
             normalizedRequestParameters = NormalizeRequestParameters(parameters);
 
-            StringBuilder signatureBase = new StringBuilder();			
+            var signatureBase = new StringBuilder();			
             signatureBase.AppendFormat("{0}&", httpMethod.ToUpper());
             signatureBase.AppendFormat("{0}&", UrlEncode(normalizedUrl));
             signatureBase.AppendFormat("{0}", UrlEncode(normalizedRequestParameters));
@@ -212,9 +212,9 @@ namespace OAuth {
                 case SignatureTypes.Plaintext:					
                     throw new NotImplementedException();
                 case SignatureTypes.Hmacsha1:					
-					string signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, Hmacsha1SignatureType, out normalizedUrl, out normalizedRequestParameters);
+					var signatureBase = GenerateSignatureBase(url, consumerKey, token, tokenSecret, httpMethod, timeStamp, nonce, Hmacsha1SignatureType, out normalizedUrl, out normalizedRequestParameters);
 
-                    HMACSHA1 hmacsha1 = new HMACSHA1();
+                    var hmacsha1 = new HMACSHA1();
                     hmacsha1.Key = Encoding.ASCII.GetBytes(string.Format("{0}&{1}", UrlEncode(consumerSecret), string.IsNullOrEmpty(tokenSecret) ? "" : UrlEncode(tokenSecret)));
 
                     return GenerateSignatureUsingHash(signatureBase, hmacsha1);                                        
@@ -227,7 +227,7 @@ namespace OAuth {
 
         public virtual string GenerateTimeStamp() {
             // Default implementation of UNIX time of the current UTC time
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return Convert.ToInt64(ts.TotalSeconds).ToString();            
         }
 

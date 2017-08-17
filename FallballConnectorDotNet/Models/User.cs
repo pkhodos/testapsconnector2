@@ -16,15 +16,15 @@ namespace FallballConnectorDotNet.Models
 
         public static User GetObject(Setting setting, HttpRequest request, string oaUserId)
         {
-            OaUser oaUser = Oa.GetResource<OaUser>(setting, request, oaUserId);
+            var oaUser = Oa.GetResource<OaUser>(setting, request, oaUserId);
 
             return GetObject(setting, request, oaUser);
         }
 
         public static User GetObject(Setting setting, HttpRequest request, OaUser oaUser)
         {
-            OaTenant    oaTenant    = Oa.GetResource<OaTenant>(setting, request, oaUser.TenantLink.ApsLink.Id);
-            OaAdminUser oaAdminUser = Oa.GetResource<OaAdminUser>(setting, request, oaUser.AdminUserLink.ApsLink.Id);
+            var    oaTenant    = Oa.GetResource<OaTenant>(setting, request, oaUser.TenantLink.ApsLink.Id);
+            var oaAdminUser = Oa.GetResource<OaAdminUser>(setting, request, oaUser.AdminUserLink.ApsLink.Id);
 
             var user = new User
             {
@@ -39,10 +39,10 @@ namespace FallballConnectorDotNet.Models
 
         public static string Create(Setting setting, HttpRequest request, OaUser oaUser)
         {
-            User user = GetObject(setting, request, oaUser);
+            var user = GetObject(setting, request, oaUser);
 
             // call external service
-            string userId = FbUser.Create(setting, user);
+            var userId = FbUser.Create(setting, user);
 
             return userId;
         }

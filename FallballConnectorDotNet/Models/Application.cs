@@ -1,4 +1,7 @@
-﻿using FallballConnectorDotNet.Controllers;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
+using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
 using Microsoft.AspNetCore.Http;
 
@@ -15,7 +18,8 @@ namespace FallballConnectorDotNet.Models
 
         public static string Create(Setting setting, HttpRequest request, OaApplication oaApplication)
         {
-            Application app = GetObject(oaApplication);
+
+            var app = GetObject(oaApplication);
 
             // call external service
             var appId = FbReseller.Create(setting, app);

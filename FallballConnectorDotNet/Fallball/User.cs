@@ -29,7 +29,7 @@ namespace FallballConnectorDotNet.Fallball
         {
             var u = new FbUser {Email = user.Email, Admin = true, Storage = new Storage {Limit = 1}};
 
-            FbUser fbUser = Fallball.Call<FbUser>(setting, HttpMethod.Post, 
+            var fbUser = Fallball.Call<FbUser>(setting, HttpMethod.Post, 
                 string.Format("resellers/{0}/clients/{1}/users/",
                     FbReseller.GetId(user.Tenant.App),
                     FbClient.GetId(user.Tenant)),
@@ -49,7 +49,7 @@ namespace FallballConnectorDotNet.Fallball
 
         public static string GetUserLogin(Setting setting, User user)
         {
-            string url = Fallball.Call<String>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+            var url = Fallball.Call<String>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
                 FbReseller.GetId(user.Tenant.App),
                 FbClient.GetId(user.Tenant),
                 GetId(user)
