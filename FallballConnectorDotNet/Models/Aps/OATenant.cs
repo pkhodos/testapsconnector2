@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace FallballConnectorDotNet.Models
+namespace FallballConnectorDotNet.Models.Aps
 {
     public class OaTenant
     {

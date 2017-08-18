@@ -3,8 +3,10 @@ using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OAuth {
-	public class OAuthBase {
+namespace OAuth 
+{
+	public class OAuthBase 
+	{
 
         public enum SignatureTypes {
             Hmacsha1,
@@ -13,8 +15,8 @@ namespace OAuth {
         }
 
         protected class QueryParameter {
-            private string _name = null;
-            private string _value = null;
+            private string _name;
+            private string _value;
 
             public QueryParameter(string name, string value) {
                 _name = name;

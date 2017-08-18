@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
+using FallballConnectorDotNet.Models.Aps;
 using Microsoft.AspNetCore.Http;
 
 namespace FallballConnectorDotNet.Models
@@ -16,15 +17,13 @@ namespace FallballConnectorDotNet.Models
             return new Application {ApsId = oaApplication.Aps.Id};
         }
 
-        public static string Create(Setting setting, HttpRequest request, OaApplication oaApplication)
+        public static string Create(Setting setting, OaApplication oaApplication)
         {
 
             var app = GetObject(oaApplication);
 
             // call external service
-            var appId = FbReseller.Create(setting, app);
-
-            return appId;
+            return FbReseller.Create(setting, app);
         }
     }
 }

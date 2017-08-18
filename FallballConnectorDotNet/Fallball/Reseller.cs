@@ -20,15 +20,17 @@ namespace FallballConnectorDotNet.Fallball
         
         [JsonProperty("token", NullValueHandling = NullValueHandling.Ignore)]
         public string Token { get; set; }
+        
+        private const int ResellerLimit = 100000;
 
-        public static string GetId(Application oa)
+        public static string GetId(Application app)
         {
-            return oa.ApsId;
+            return app.ApsId;
         }
 
         public static string Create(Setting setting, Application app)
         {
-            var r = new FbReseller {Name = GetId(app), Rid = GetId(app), Storage = new Storage {Limit = 100000}};
+            var r = new FbReseller {Name = GetId(app), Rid = GetId(app), Storage = new Storage {Limit = ResellerLimit}};
             var body = JsonConvert.SerializeObject(r);
             
             var fbReseller = Fallball.Call<FbReseller>(setting, HttpMethod.Post, "resellers/", body);

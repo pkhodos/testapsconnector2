@@ -1,6 +1,7 @@
 ﻿using System;
 using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
+using FallballConnectorDotNet.Models.Aps;
 using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -16,24 +17,20 @@ namespace FallballConnectorDotNet.Models
         public static Tenant GetObject(Setting setting, HttpRequest request, string oaTenantId)
         {
             var oaTenant = Oa.GetResource<OaTenant>(setting, request, oaTenantId);
-            var tenant = GetObject(setting, request, oaTenant);
-
-            return tenant;
+            return GetObject(setting, request, oaTenant);
         }
 
         public static Tenant GetObject(Setting setting, HttpRequest request, OaTenant oaTenant)
         {
             var oaApplication = Oa.GetResource<OaApplication>(setting, request, oaTenant.AppLink.ApsLink.Id);
-            var         oaAccount = Oa.GetResource<OaAccount>(setting, request, oaTenant.AccountLink.ApsLink.Id);
+            var oaAccount = Oa.GetResource<OaAccount>(setting, request, oaTenant.AccountLink.ApsLink.Id);
 
-            var tenant = new Tenant
+            return new Tenant
             {
                 ApsId = oaTenant.Aps.Id,
                 CompanyName = oaAccount.CompanyName,
                 App = Application.GetObject(oaApplication)
             };
-
-            return tenant;
         }
 
         public static string Create(Setting setting, HttpRequest request, OaTenant oaTenant)
@@ -41,9 +38,7 @@ namespace FallballConnectorDotNet.Models
             var tenant = GetObject(setting, request, oaTenant);
 
             // call external service
-            var tenantName = FbClient.Create(setting, tenant);
-
-            return tenantName;
+            return FbClient.Create(setting, tenant);
         }
 
         public static string GetAdminLogin(Setting setting, HttpRequest request, string oaTenantId)

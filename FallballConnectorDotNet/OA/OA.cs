@@ -15,7 +15,7 @@ using OAuth;
 
 namespace FallballConnectorDotNet.OA
 {
-    public class Oa
+    public static class Oa
     {
         public static T GetResource<T>(Setting setting, HttpRequest request, string resource)
         {
@@ -34,35 +34,33 @@ namespace FallballConnectorDotNet.OA
 
             string header;
 
-            {
-                var oauthBase = new OAuthBase();
-                var timestamp = oauthBase.GenerateTimeStamp();
-                var nonce = oauthBase.GenerateNonce();
-                var consumerKey = setting.Config["oauth_key"];
-                var consumerSecret = setting.Config["oauth_secret"];
-                string normalizedUrl;
-                string normalizedRequestParameters;
+            var oauthBase = new OAuthBase();
+            var timestamp = oauthBase.GenerateTimeStamp();
+            var nonce = oauthBase.GenerateNonce();
+            var consumerKey = setting.Config["oauth_key"];
+            var consumerSecret = setting.Config["oauth_secret"];
+            string normalizedUrl;
+            string normalizedRequestParameters;
 
-                // generating signature based on requst parameters
-                var sig = oauthBase.GenerateSignature(
-                    new Uri(url),
-                    consumerKey,
-                    consumerSecret,
-                    string.Empty, string.Empty,
-                    method.ToString(),
-                    timestamp,
-                    nonce,
-                    out normalizedUrl, out normalizedRequestParameters);
+            // generating signature based on requst parameters
+            var sig = oauthBase.GenerateSignature(
+                new Uri(url),
+                consumerKey,
+                consumerSecret,
+                string.Empty, string.Empty,
+                method.ToString(),
+                timestamp,
+                nonce,
+                out normalizedUrl, out normalizedRequestParameters);
 
-                header = string.Format(
-                    "oauth_consumer_key=\"{0}\"" +
-                    ",oauth_signature_method=\"HMAC-SHA1\"" +
-                    ",oauth_timestamp=\"{1}\"" +
-                    ",oauth_nonce=\"{2}\"" +
-                    ",oauth_version=\"1.0\"" +
-                    ",oauth_signature=\"{3}\"",
-                    consumerKey, timestamp, nonce, sig);
-            }
+            header = string.Format(
+                "oauth_consumer_key=\"{0}\"" +
+                ",oauth_signature_method=\"HMAC-SHA1\"" +
+                ",oauth_timestamp=\"{1}\"" +
+                ",oauth_nonce=\"{2}\"" +
+                ",oauth_version=\"1.0\"" +
+                ",oauth_signature=\"{3}\"",
+                consumerKey, timestamp, nonce, sig);
 
             using (var client = new HttpClient())
             {

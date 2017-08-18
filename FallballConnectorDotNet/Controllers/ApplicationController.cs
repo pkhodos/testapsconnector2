@@ -1,5 +1,6 @@
 using System.Linq;
 using FallballConnectorDotNet.Models;
+using FallballConnectorDotNet.Models.Aps;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace FallballConnectorDotNet.Controllers
             if (oaApplication == null)
                 return BadRequest();
 
-            var id = Application.Create(_setting, Request, oaApplication);
+            var id = Application.Create(_setting, oaApplication);
             
             return CreatedAtRoute(
                 "Root",

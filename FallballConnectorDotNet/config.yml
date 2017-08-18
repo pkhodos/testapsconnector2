@@ -5,5 +5,5 @@ diskspace_resource: DISKSPACE
 fallball_service_authorization_token: d1d3d1d42bc9dd033fb91a043937cbdeb19632cf
 fallball_service_url: 'https://service-dot-fall-ball.appspot.com/v1/'
 version : "1.0"
-oauth_key: aa2service-v2-471a55cac5b743cfb8
-oauth_secret: 590d70d30cc146fca0c29ff5f354382e
+oauth_key: aa2service-v3-7a9fae9a4a5a498ea3
+oauth_secret: 9f1861548c1b4db485d40ccc7c657ce9

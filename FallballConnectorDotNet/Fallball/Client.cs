@@ -15,6 +15,8 @@ namespace FallballConnectorDotNet.Fallball
         
         [JsonProperty("storage")]
         public Storage Storage { get; set; }
+        
+        private const int ClientLimit = 10;
 
         public static string GetId(Tenant oa)
         {
@@ -23,7 +25,7 @@ namespace FallballConnectorDotNet.Fallball
 
         public static string Create(Setting setting, Tenant tenant)
         {
-            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = 10}};
+            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = ClientLimit}};
             var body = JsonConvert.SerializeObject(c);
 
             var fbReseller = Fallball.Call<FbReseller>(

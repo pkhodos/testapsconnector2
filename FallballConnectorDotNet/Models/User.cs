@@ -1,6 +1,7 @@
 ﻿using System;
 using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
+using FallballConnectorDotNet.Models.Aps;
 using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -26,15 +27,13 @@ namespace FallballConnectorDotNet.Models
             var    oaTenant    = Oa.GetResource<OaTenant>(setting, request, oaUser.TenantLink.ApsLink.Id);
             var oaAdminUser = Oa.GetResource<OaAdminUser>(setting, request, oaUser.AdminUserLink.ApsLink.Id);
 
-            var user = new User
+            return new User
             {
                 ApsId =  oaUser.AdminUserLink.ApsLink.Id,
                 UserId = oaUser.UserId,
                 Email =  oaAdminUser.Email,
                 Tenant = Tenant.GetObject(setting, request, oaTenant)
             };
-
-            return user;
         }
 
         public static string Create(Setting setting, HttpRequest request, OaUser oaUser)

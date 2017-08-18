@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace FallballConnectorDotNet.Fallball
 {
-    public class Fallball
+    public static class Fallball
     {
         public static T Call<T>(Setting setting, HttpMethod method, string url, string body)
         {
