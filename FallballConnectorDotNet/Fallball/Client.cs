@@ -73,13 +73,11 @@ namespace FallballConnectorDotNet.Fallball
                 userId = result.ToString();
             }
 
-            var url = Fallball.Call<string>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+            return Fallball.Call<string>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
                 FbReseller.GetId(tenant.App),
                 GetId(tenant),
                 userId
             ));
-
-            return url;
         }
     }
 }

@@ -51,13 +51,11 @@ namespace FallballConnectorDotNet.Fallball
 
         public static string GetUserLogin(Setting setting, User user)
         {
-            var url = Fallball.Call<String>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
+            return Fallball.Call<String>(setting, HttpMethod.Get, string.Format("resellers/{0}/clients/{1}/users/{2}/link",
                 FbReseller.GetId(user.Tenant.App),
                 FbClient.GetId(user.Tenant),
                 GetId(user)
             ));
-
-            return url;
         }
     }
 }

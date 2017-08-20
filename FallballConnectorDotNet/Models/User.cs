@@ -38,17 +38,13 @@ namespace FallballConnectorDotNet.Models
         {
             var user = GetObject(setting, request, oaUser);
 
-            // call external service
-            var userId = FbUser.Create(setting, user);
-
-            return userId;
+            return FbUser.Create(setting, user);
         }
 
         public static void Delete(Setting setting, HttpRequest request, string oaUserId)
         {
             var user = GetObject(setting, request, oaUserId);
 
-            // call external service
             FbUser.Delete(setting, user);
         }
 
@@ -56,10 +52,7 @@ namespace FallballConnectorDotNet.Models
         {
             var user = GetObject(setting, request, oaUserId);
 
-            // call external service
-            var url = FbUser.GetUserLogin(setting, user);
-
-            return url;
+            return FbUser.GetUserLogin(setting, user);
         }
     }
 }
