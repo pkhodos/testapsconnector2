@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
 using FallballConnectorDotNet.Models.Aps;
 using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace FallballConnectorDotNet.Models
 {
@@ -50,5 +49,17 @@ namespace FallballConnectorDotNet.Models
 
             return url;
         }
+        
+        public static Usage GetUsage(Setting setting, HttpRequest request, string oaTenantId)
+        {
+            var tenant = GetObject(setting, request, oaTenantId);
+
+            // call external service
+            return FbClient.GetUsage(setting, tenant); 
+        }
+    }
+
+    public class Usage : Dictionary<string, double>
+    {
     }
 }

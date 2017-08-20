@@ -1,10 +1,8 @@
-﻿using System;
-using FallballConnectorDotNet.Controllers;
+﻿using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
 using FallballConnectorDotNet.Models.Aps;
 using FallballConnectorDotNet.OA;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace FallballConnectorDotNet.Models
 {

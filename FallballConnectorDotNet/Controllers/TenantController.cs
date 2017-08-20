@@ -65,14 +65,14 @@ namespace FallballConnectorDotNet.Controllers
             if (id == null)
                 return BadRequest();
 
-            _setting.Logger.LogError("\n\n ===== GET USAGE ===== \n\n ");
+            var usage = Tenant.GetUsage(_setting, Request, id);
 
             return new ObjectResult(
                 new
                 {
-                    DISKSPACE = new {usage = 2},
-                    USERS = new {usage = 2},
-                    DEVICES = new {usage = 3}
+                    DISKSPACE = new {usage = usage.ContainsKey("DISKSPACE")? usage["DISKSPACE"] : 0},
+                    USERS = new {usage = usage.ContainsKey("USERS")? usage["USERS"] : 0},
+                    DEVICES = new {usage = usage.ContainsKey("DEVICES")? usage["DEVICES"] : 0},
                 }
             );
         }

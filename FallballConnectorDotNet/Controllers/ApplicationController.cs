@@ -1,10 +1,8 @@
-using System.Linq;
 using FallballConnectorDotNet.Models;
 using FallballConnectorDotNet.Models.Aps;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 
 namespace FallballConnectorDotNet.Controllers
 {

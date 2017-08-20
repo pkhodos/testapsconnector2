@@ -6,5 +6,8 @@ namespace FallballConnectorDotNet.Fallball
     {
         [JsonProperty("limit")]
         public int Limit { get; set; }
+        
+        [JsonProperty("usage", NullValueHandling = NullValueHandling.Ignore)]
+        public int Usage { get; set; }
     }
 }

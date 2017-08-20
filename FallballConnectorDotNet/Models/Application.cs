@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using FallballConnectorDotNet.Controllers;
+﻿using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Fallball;
 using FallballConnectorDotNet.Models.Aps;
-using Microsoft.AspNetCore.Http;
 
 namespace FallballConnectorDotNet.Models
 {

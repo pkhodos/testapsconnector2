@@ -1,9 +1,9 @@
 using System;
-using System.Security.Cryptography;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 
-namespace OAuth 
+namespace FallballConnectorDotNet.OA 
 {
 	public class OAuthBase 
 	{
@@ -37,10 +37,10 @@ namespace OAuth
             #region IComparer<QueryParameter> Members
 
             public int Compare(QueryParameter x, QueryParameter y) {
-                if (x.Name == y.Name) {
-                    return string.Compare(x.Value, y.Value);
+                if (y != null && (x != null && x.Name == y.Name)) {
+                    return String.CompareOrdinal(x.Value, y.Value);
                 } else {
-                    return string.Compare(x.Name, y.Name);
+                    return String.CompareOrdinal(x.Name, y.Name);
                 }
             }
 
@@ -132,7 +132,7 @@ namespace OAuth
                         
 		protected string NormalizeRequestParameters(IList<QueryParameter> parameters) {			
 			var sb = new StringBuilder();
-            QueryParameter p = null;
+            QueryParameter p;
             for (var i = 0; i < parameters.Count; i++) {
                 p = parameters[i];
                 sb.AppendFormat("{0}={1}", p.Name, p.Value);
@@ -150,10 +150,6 @@ namespace OAuth
                 token = string.Empty;
             }
 
-            if (tokenSecret == null) {
-                tokenSecret = string.Empty;
-            }
-
             if (string.IsNullOrEmpty(consumerKey)) {
                 throw new ArgumentNullException("consumerKey");
             }
@@ -165,9 +161,6 @@ namespace OAuth
             if (string.IsNullOrEmpty(signatureType)) {
                 throw new ArgumentNullException("signatureType");
             }
-
-			normalizedUrl = null;
-			normalizedRequestParameters = null;
 
             var parameters = GetQueryParameters(url.Query);
             parameters.Add(new QueryParameter(OAuthVersionKey, OAuthVersion));

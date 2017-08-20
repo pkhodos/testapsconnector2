@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OAuth;
 
 namespace FallballConnectorDotNet.OA
 {
@@ -101,7 +100,7 @@ namespace FallballConnectorDotNet.OA
             }
         }
         
-        public static void ValidateRequest (IConfiguration _config, ActionExecutingContext actionContext)
+        public static void ValidateRequest (IConfiguration config, ActionExecutingContext actionContext)
         {
             var context = actionContext.HttpContext;
             
@@ -123,28 +122,26 @@ namespace FallballConnectorDotNet.OA
             string normalizedUrl;
             string normalizedRequestParameters;
 
-            var oauthSecret = _config["oauth_secret"];
-
             // generating signature based on requst parameters
             var oauthBase = new OAuthBase();
 
             var url = context.Request.GetDisplayUrl();
             
-            // support localhost and https urls
-            if(url.Contains("http://localhost") == false)
+            // use https if it was terminated by some tool
+            if(context.Request.Headers.ContainsKey("X-Forwarded-Proto"))
                 url = url.Replace("http:", "https:");
             
             var generatedSig = oauthBase.GenerateSignature(
                 new Uri(url),
                 header["oauth_consumer_key"],
-                _config["oauth_secret"],
+                config["oauth_secret"],
                 string.Empty, string.Empty,
                 context.Request.Method,
                 header["oauth_timestamp"],
                 header["oauth_nonce"],
                 out normalizedUrl, out normalizedRequestParameters);
 
-            var incomingSig = System.Net.WebUtility.UrlDecode(header["oauth_signature"]);
+            var incomingSig = WebUtility.UrlDecode(header["oauth_signature"]);
             
             if(generatedSig != incomingSig )
                 throw new WebException("Authentication is failed.");

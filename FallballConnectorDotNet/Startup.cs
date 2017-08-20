@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace FallballConnectorDotNet
 {
@@ -15,7 +16,7 @@ namespace FallballConnectorDotNet
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddYamlFile("config.yml", optional: false)
+                .AddYamlFile(Environment.GetEnvironmentVariable("CONFIG_FILE"), optional: false)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -35,9 +36,10 @@ namespace FallballConnectorDotNet
             services.AddMvc(
                 config =>
                 {
-                    config.Filters.Add(new OAuthValidationFilter(Configuration, loggerFactory));
+                    config.Filters.Add(new OAuthValidationFilter(Configuration));
                 }
-                );
+                )
+                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

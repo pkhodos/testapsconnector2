@@ -16,6 +16,9 @@ namespace FallballConnectorDotNet.Fallball
         [JsonProperty("storage")]
         public Storage Storage { get; set; }
         
+        [JsonProperty("users_amount", NullValueHandling = NullValueHandling.Ignore)]
+        public Double UsersAmount { get; set; }
+        
         private const int ClientLimit = 10;
 
         public static string GetId(Tenant oa)
@@ -23,6 +26,21 @@ namespace FallballConnectorDotNet.Fallball
             return oa.ApsId;
         }
 
+        public static Usage GetUsage(Setting setting, Tenant tenant)
+        {
+            var fbClient =  Fallball.Call<FbClient>(
+                setting,
+                HttpMethod.Get,
+                string.Format("resellers/{0}/clients/{1}", 
+                    FbReseller.GetId(tenant.App), GetId(tenant)));
+            
+            Usage u = new Usage();
+            u["USERS"] = fbClient.UsersAmount;
+            u["DISKSPACE"] = fbClient.Storage.Limit;
+
+            return u;
+        }
+        
         public static string Create(Setting setting, Tenant tenant)
         {
             var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = ClientLimit}};

@@ -4,11 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using FallballConnectorDotNet.OA;
-using Microsoft.AspNetCore.Authorization;
 
 
 namespace FallballConnectorDotNet
@@ -38,14 +35,17 @@ namespace FallballConnectorDotNet
 
                 var url = UriHelper.GetDisplayUrl(context.Request);
                 var requestBodyText = new StreamReader(requestBodyStream).ReadToEnd();
+
+                var auth = context.Request.Headers.ContainsKey("Authorization")? (string) context.Request.Headers["Authorization"] : "" ;
+                
                 _logger.LogInformation(
-                    $"===>>> REQUEST METHOD: {context.Request.Method}, REQUEST URL: {url}, REQUEST BODY: {requestBodyText}, ");
+                    $"===>>> REQUEST METHOD: {context.Request.Method}, AUTH: {auth}, REQUEST URL: {url},\n REQUEST BODY: {requestBodyText}, ");
 
                 requestBodyStream.Seek(0, SeekOrigin.Begin);
                 context.Request.Body = requestBodyStream;
                 
                 await _next(context);
-                //context.Request.Body = originalRequestBody;
+                context.Request.Body = originalRequestBody;
             }
             catch (Exception ex)
             {

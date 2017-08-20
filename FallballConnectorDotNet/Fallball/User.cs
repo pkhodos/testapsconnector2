@@ -18,7 +18,7 @@ namespace FallballConnectorDotNet.Fallball
         public Storage Storage { get; set; }
         
         [JsonProperty("user_id", NullValueHandling = NullValueHandling.Ignore)]
-        public string UserID { get; set; }
+        public string UserId { get; set; }
 
         public static string GetId(User oa)
         {
@@ -37,7 +37,7 @@ namespace FallballConnectorDotNet.Fallball
                     FbClient.GetId(user.Tenant)),
                 JsonConvert.SerializeObject(u));
             
-            return fbUser.UserID;
+            return fbUser.UserId;
         }
 
         public static void Delete(Setting setting, User user)

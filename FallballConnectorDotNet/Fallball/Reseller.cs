@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using FallballConnectorDotNet.Controllers;
 using FallballConnectorDotNet.Models;
 using Newtonsoft.Json;
