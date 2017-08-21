@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace FallballConnectorDotNet.Fallball
 {
@@ -8,6 +9,6 @@ namespace FallballConnectorDotNet.Fallball
         public int Limit { get; set; }
         
         [JsonProperty("usage", NullValueHandling = NullValueHandling.Ignore)]
-        public int Usage { get; set; }
+        public int? Usage { get; set; }
     }
 }

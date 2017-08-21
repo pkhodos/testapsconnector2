@@ -32,7 +32,7 @@ namespace FallballConnectorDotNet.Controllers
             return CreatedAtRoute(
                 "Root",
                 null,
-                new {appID = id}
+                new {appId = id}
             );
         }
 

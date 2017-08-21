@@ -6,11 +6,13 @@ namespace FallballConnectorDotNet.Models
 {
     public class Application
     {
-        public string ApsId;
+        public string Id;
+        public string Type;
+        public string Status;
 
         public static Application GetObject(OaApplication oaApplication)
         {
-            return new Application {ApsId = oaApplication.Aps.Id};
+            return new Application {Id = oaApplication.Aps.Id, Type = oaApplication.Aps.Type, Status = oaApplication.Aps.Status};
         }
 
         public static string Create(Setting setting, OaApplication oaApplication)

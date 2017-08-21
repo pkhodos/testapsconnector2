@@ -10,8 +10,12 @@ namespace FallballConnectorDotNet.Models
     public class Tenant
     {
         public Application App;
-        public string ApsId;
+        public string Id;
         public string CompanyName;
+        
+        public int UsersLimit;
+        public int DiskspaceLimit;
+        public int DevicesLimit;
 
         public static Tenant GetObject(Setting setting, HttpRequest request, string oaTenantId)
         {
@@ -26,9 +30,14 @@ namespace FallballConnectorDotNet.Models
 
             return new Tenant
             {
-                ApsId = oaTenant.Aps.Id,
+                Id = oaTenant.Aps.Id,
                 CompanyName = oaAccount.CompanyName,
-                App = Application.GetObject(oaApplication)
+                App = Application.GetObject(oaApplication),
+                
+                // resources
+                UsersLimit     =  oaTenant.UsersLimit.Limit,
+                DiskspaceLimit =  oaTenant.DiskspaceLimit.Limit,
+                DevicesLimit   =  oaTenant.DevicesLimit.Limit
             };
         }
 
@@ -36,30 +45,39 @@ namespace FallballConnectorDotNet.Models
         {
             var tenant = GetObject(setting, request, oaTenant);
 
-            // call external service
             return FbClient.Create(setting, tenant);
+        }
+        
+        public static string Update(Setting setting, HttpRequest request, OaTenant oaTenant)
+        {
+            var tenant = GetObject(setting, request, oaTenant);
+
+            return FbClient.Update(setting, tenant);
+        }
+        
+        public static void Delete(Setting setting, HttpRequest request, string oaTenantId)
+        {
+            var tenant = GetObject(setting, request, oaTenantId);
+
+            FbClient.Delete(setting, tenant);
         }
 
         public static string GetAdminLogin(Setting setting, HttpRequest request, string oaTenantId)
         {
             var tenant = GetObject(setting, request, oaTenantId);
 
-            // call external service
-            var url = FbClient.GetAdminLogin(setting, tenant);
-
-            return url;
+            return FbClient.GetAdminLogin(setting, tenant);
         }
         
         public static Usage GetUsage(Setting setting, HttpRequest request, string oaTenantId)
         {
             var tenant = GetObject(setting, request, oaTenantId);
 
-            // call external service
             return FbClient.GetUsage(setting, tenant); 
         }
     }
 
-    public class Usage : Dictionary<string, double>
+    public class Usage : Dictionary<string, int?>
     {
     }
 }

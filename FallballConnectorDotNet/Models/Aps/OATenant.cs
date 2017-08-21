@@ -19,7 +19,13 @@ namespace FallballConnectorDotNet.Models.Aps
         [JsonProperty("USERS")]
         public OaLimit UsersLimit { get; set; }
         
-        // add your resources here
+        [JsonProperty("DEVICES")]
+        public OaLimit DevicesLimit { get; set; }
+        
+        [JsonProperty("DISKSPACE")]
+        public OaLimit DiskspaceLimit { get; set; }
+        
+        // TODO: add your resources here ...
     }
 
     public class OaLimit

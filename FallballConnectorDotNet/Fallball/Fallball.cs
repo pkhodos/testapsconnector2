@@ -34,7 +34,7 @@ namespace FallballConnectorDotNet.Fallball
 
             request.Content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            setting.Logger.LogInformation("FALLBALL BEGIN REQUEST to {0}", url);
+            setting.Logger.LogInformation("FALLBALL REQUEST {0} to {1}",method.ToString(), url);
             setting.Logger.LogInformation("FALLBALL BODY: {0}", body);
 
             var response = client.SendAsync(request).Result;
@@ -50,8 +50,8 @@ namespace FallballConnectorDotNet.Fallball
                 var result = response.Content.ReadAsStringAsync().Result;
                 setting.Logger.LogInformation("FALLBALL FAIL: {0}", result);
 
-                var error = string.Format("Call to Fallball failed. URL: {0}, BODY: {1}, RESPONSE: {2}",
-                    url, body, result);
+                var error = string.Format("Call to Fallball failed. METHOD: {0}, URL: {1}, BODY: {2}, RESPONSE: {3}",
+                    method.ToString(), url, body, result);
 
                 throw new WebException(error);
             }

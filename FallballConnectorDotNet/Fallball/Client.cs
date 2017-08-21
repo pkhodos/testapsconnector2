@@ -17,13 +17,11 @@ namespace FallballConnectorDotNet.Fallball
         public Storage Storage { get; set; }
         
         [JsonProperty("users_amount", NullValueHandling = NullValueHandling.Ignore)]
-        public Double UsersAmount { get; set; }
+        public int? UsersAmount { get; set; }
         
-        private const int ClientLimit = 10;
-
-        public static string GetId(Tenant oa)
+        public static string GetId(Tenant tenant)
         {
-            return oa.ApsId;
+            return tenant.Id;
         }
 
         public static Usage GetUsage(Setting setting, Tenant tenant)
@@ -36,14 +34,14 @@ namespace FallballConnectorDotNet.Fallball
             
             Usage u = new Usage();
             u["USERS"] = fbClient.UsersAmount;
-            u["DISKSPACE"] = fbClient.Storage.Limit;
+            u["DISKSPACE"] = fbClient.Storage.Usage;
 
             return u;
         }
         
         public static string Create(Setting setting, Tenant tenant)
         {
-            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = ClientLimit}};
+            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = tenant.DiskspaceLimit}};
             var body = JsonConvert.SerializeObject(c);
 
             var fbReseller = Fallball.Call<FbReseller>(
@@ -60,6 +58,42 @@ namespace FallballConnectorDotNet.Fallball
             
             return fbClient.Name;
         }
+        
+        public static string Update(Setting setting, Tenant tenant)
+        {
+            var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = tenant.DiskspaceLimit}};
+            var body = JsonConvert.SerializeObject(c);
+
+            var fbReseller = Fallball.Call<FbReseller>(
+                setting,
+                HttpMethod.Get,
+                string.Format("resellers/{0}", FbReseller.GetId(tenant.App)));
+            
+            var fbClient = Fallball.Call<FbClient>(
+                setting, 
+                HttpMethod.Put, 
+                string.Format("resellers/{0}/clients/{1}", FbReseller.GetId(tenant.App), GetId(tenant)),
+                body, 
+                fbReseller.Token);
+            
+            return fbClient.Name;
+        }
+        
+        public static void Delete(Setting setting, Tenant tenant)
+        {
+            var fbReseller = Fallball.Call<FbReseller>(
+                setting,
+                HttpMethod.Get,
+                string.Format("resellers/{0}", FbReseller.GetId(tenant.App)));
+            
+            Fallball.Call<string>(
+                setting, 
+                HttpMethod.Delete, 
+                string.Format("resellers/{0}/clients/{1}", FbReseller.GetId(tenant.App), GetId(tenant)),
+                "", 
+                fbReseller.Token);
+        }
+        
 
         public static string GetAdminLogin(Setting setting, Tenant tenant)
         {

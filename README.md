@@ -5,6 +5,7 @@ This is a basic sample connector based on .Net Core Framework for the [Fallball 
 ## Running on localhost with tunnel
 * Download and unzip fallball-connector-dotnet
 * Open FallballConnectorDotNet.sln using Visual Studio or use following commands:
+* Define Env Variable CONFIG_FILE=config.yml
 
 ```bash
 cd FallballConnectorDotNet

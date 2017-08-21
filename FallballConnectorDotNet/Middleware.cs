@@ -39,7 +39,7 @@ namespace FallballConnectorDotNet
                 var auth = context.Request.Headers.ContainsKey("Authorization")? (string) context.Request.Headers["Authorization"] : "" ;
                 
                 _logger.LogInformation(
-                    $"===>>> REQUEST METHOD: {context.Request.Method}, AUTH: {auth}, REQUEST URL: {url},\n REQUEST BODY: {requestBodyText}, ");
+                    $"===>>> REQUEST METHOD: {context.Request.Method}, REQUEST URL: {url}, AUTH: {auth}, \n REQUEST BODY: {requestBodyText}, ");
 
                 requestBodyStream.Seek(0, SeekOrigin.Begin);
                 context.Request.Body = requestBodyStream;

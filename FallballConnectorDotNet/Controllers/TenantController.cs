@@ -38,11 +38,12 @@ namespace FallballConnectorDotNet.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] OaTenant data)
+        public IActionResult Update(string id, [FromBody] OaTenant oaTenant)
         {
-            if (data == null)
+            if (oaTenant == null)
                 return BadRequest();
-            // Not yet implemented
+            
+            Tenant.Update(_setting, Request, oaTenant);
 
             return Ok();
         }
@@ -53,7 +54,7 @@ namespace FallballConnectorDotNet.Controllers
             if (id == null)
                 return BadRequest();
 
-            // Not yet implemented
+            Tenant.Delete(_setting, Request, id);
 
             return Ok();
         }
@@ -97,16 +98,12 @@ namespace FallballConnectorDotNet.Controllers
         [HttpPut("{id}/disable")]
         public IActionResult DisableSubscription(string id)
         {
-            // Not implemented yet
-
             return Ok();
         }
 
         [HttpPut("{id}/enable")]
         public IActionResult EnableSubscription(string id)
         {
-            // Not implemented yet
-
             return Ok();
         }
 

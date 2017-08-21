@@ -25,11 +25,11 @@ namespace FallballConnectorDotNet.Fallball
             return oa.UserId;
         }
 
-        private const int UserLimit = 1;
+        private const int UsersStorage = 1;
 
         public static string Create(Setting setting, User user)
         {
-            var u = new FbUser {Email = user.Email, Admin = true, Storage = new Storage {Limit = UserLimit}};
+            var u = new FbUser {Email = user.Email, Admin = true, Storage = new Storage {Limit = UsersStorage}};
 
             var fbUser = Fallball.Call<FbUser>(setting, HttpMethod.Post, 
                 string.Format("resellers/{0}/clients/{1}/users/",
