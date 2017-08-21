@@ -48,11 +48,11 @@ namespace FallballConnectorDotNet.Models
             return FbClient.Create(setting, tenant);
         }
         
-        public static string Update(Setting setting, HttpRequest request, OaTenant oaTenant)
+        public static void Update(Setting setting, HttpRequest request, OaTenant oaTenant)
         {
             var tenant = GetObject(setting, request, oaTenant);
 
-            return FbClient.Update(setting, tenant);
+            FbClient.Update(setting, tenant);
         }
         
         public static void Delete(Setting setting, HttpRequest request, string oaTenantId)

@@ -59,7 +59,7 @@ namespace FallballConnectorDotNet.Fallball
             return fbClient.Name;
         }
         
-        public static string Update(Setting setting, Tenant tenant)
+        public static void Update(Setting setting, Tenant tenant)
         {
             var c = new FbClient {Name = GetId(tenant), Storage = new Storage {Limit = tenant.DiskspaceLimit}};
             var body = JsonConvert.SerializeObject(c);
@@ -69,14 +69,12 @@ namespace FallballConnectorDotNet.Fallball
                 HttpMethod.Get,
                 string.Format("resellers/{0}", FbReseller.GetId(tenant.App)));
             
-            var fbClient = Fallball.Call<FbClient>(
+            Fallball.Call<FbClient>(
                 setting, 
                 HttpMethod.Put, 
                 string.Format("resellers/{0}/clients/{1}", FbReseller.GetId(tenant.App), GetId(tenant)),
                 body, 
                 fbReseller.Token);
-            
-            return fbClient.Name;
         }
         
         public static void Delete(Setting setting, Tenant tenant)
