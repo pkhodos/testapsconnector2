@@ -72,7 +72,7 @@ namespace FallballConnectorDotNet.Fallball
             Fallball.Call<FbClient>(
                 setting, 
                 HttpMethod.Put, 
-                string.Format("resellers/{0}/clients/{1}", FbReseller.GetId(tenant.App), GetId(tenant)),
+                string.Format("resellers/{0}/clients/{1}/", FbReseller.GetId(tenant.App), GetId(tenant)),
                 body, 
                 fbReseller.Token);
         }

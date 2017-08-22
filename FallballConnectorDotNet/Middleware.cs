@@ -55,7 +55,7 @@ namespace FallballConnectorDotNet
 
         private static Task HandleExceptionAsync(ILogger<InMiddleware> logger, HttpContext context, Exception exception)
         {
-            var result = JsonConvert.SerializeObject(new {error = exception.Message});
+            var result = JsonConvert.SerializeObject(new {message = exception.Message});
             logger.LogError("<<<=== RESPONSE FAILED {0}", result);
             
             context.Response.ContentType = "application/json";
