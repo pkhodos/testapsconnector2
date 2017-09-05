@@ -1,0 +1,26 @@
+language: csharp
+mono: none
+dotnet: 1.0.4
+dist: trusty
+
+branches:
+  only:
+    - master
+services:
+  - docker
+notifications:
+  email:
+   - apslite-ci@odin.com
+script:
+  - dotnet restore *.csproj
+  - dotnet build *.csproj
+ 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  - VERSION=`cat VERSION`
+  - export REPO=ingrammicrocloud/fallball-connector-dotnet
+  - docker build -t $REPO .
+  - docker tag $REPO $REPO:latest
+  - docker tag $REPO $REPO:$VERSION
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push $REPO
