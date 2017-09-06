@@ -10,7 +10,7 @@ services:
   - docker
 notifications:
   email:
-   - apslite-ci@odin.com
+   - pkhodos@gmail.com
 script:
   - dotnet restore *.csproj
   - dotnet build *.csproj
@@ -18,7 +18,7 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - VERSION=`cat VERSION`
-  - export REPO=ingrammicrocloud/fallball-connector-dotnet
+  - export REPO=pkhodos/testapsconnector2
   - docker build -t $REPO .
   - docker tag $REPO $REPO:latest
   - docker tag $REPO $REPO:$VERSION
