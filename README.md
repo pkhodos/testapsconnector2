@@ -26,7 +26,6 @@ oauth_secret: PUT_HERE_OAUTH_SECRET
 ```
 
 * Use URL = "https://<hostname>/connector" in APS Connect
-
 * Create HTTP tunnel with [ngrok](https://ngrok.io)
 
 ```bash
